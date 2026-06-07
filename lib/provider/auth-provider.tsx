@@ -26,7 +26,7 @@ export const AuthContext = createContext<AuthContextType | undefined>(undefined)
  * Il encapsule la logique de récupération de session de Better-Auth et la rend
  * disponible dans toute l'arborescence des composants clients.
  */
-export default function AuthProvider({ children }: { children: ReactNode }) {
+export function AuthProvider({ children }: { children: ReactNode }) {
   // Utilisation du hook natif de Better-Auth pour le suivi de la session en temps réel
   const { data: session, isPending, error } = authClient.useSession();
   const setUserInfo = useUserStore((state) => state.setUserInfo);
