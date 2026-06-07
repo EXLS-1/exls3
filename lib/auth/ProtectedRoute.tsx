@@ -1,3 +1,10 @@
+// lib/auth/ProtectedRoute.tsx
+// Ce fichier définit le composant ProtectedRoute, qui est utilisé pour protéger les routes de l'application en fonction de l'état d'authentification de l'utilisateur et de ses rôles.
+// Le composant utilise le hook useAuth pour accéder à la session de l'utilisateur et vérifier s'il est authentifié. Si l'utilisateur n'est pas authentifié, il est redirigé vers la page de connexion.
+// De plus, si des rôles autorisés sont spécifiés via la prop allowedRoles, le composant vérifie si le rôle de l'utilisateur correspond à l'un des rôles autorisés. Si ce n'est pas le cas, un message d'accès restreint est affiché.
+// Pendant que la vérification de la session est en cours (isPending), un loader est affiché pour indiquer à l'utilisateur que la vérification est en cours.
+// En résumé, ProtectedRoute est un composant de haut niveau qui protège les routes en fonction de l'authent
+
 "use client";
 
 import { useAuth } from "@/lib/auth/auth-provider";

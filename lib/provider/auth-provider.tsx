@@ -19,14 +19,14 @@ interface AuthContextType {
   error: Error | null;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 /**
  * AuthProvider : Fournisseur de contexte pour l'état d'authentification.
  * Il encapsule la logique de récupération de session de Better-Auth et la rend
  * disponible dans toute l'arborescence des composants clients.
  */
-export function AuthProvider({ children }: { children: ReactNode }) {
+export default function AuthProvider({ children }: { children: ReactNode }) {
   // Utilisation du hook natif de Better-Auth pour le suivi de la session en temps réel
   const { data: session, isPending, error } = authClient.useSession();
   const setUserInfo = useUserStore((state) => state.setUserInfo);
@@ -58,14 +58,3 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   );
 }
 
-/**
- * Hook personnalisé useAuth : Permet d'accéder facilement à la session.
- * Incorpore une vérification de sécurité pour s'assurer qu'il est utilisé dans le bon contexte.
- */
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error("useAuth doit être utilisé à l'intérieur d'un AuthProvider");
-  }
-  return context;
-};
