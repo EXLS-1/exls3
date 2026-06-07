@@ -1,6 +1,6 @@
-"use client";
+ "use client";
 
-import { createContext, useContext, ReactNode, useEffect } from "react";
+import { createContext, useContext, ReactNode, useEffect, useMemo } from "react";
 import { authClient } from "./auth-client";
 import { useUserStore } from "@/lib/store/useUserStore";
 
@@ -33,7 +33,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (session?.user) {
       setUserInfo({
-        role: session.user.role ?? null,
+        role: (session.user.role as any) ?? null,
         userId: session.user.id,
         name: session.user.name ?? null,
       });
@@ -42,14 +42,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [session, isPending, setUserInfo, clearUser]);
 
+  const value = useMemo(() => ({ 
+    session: session ?? null, 
+    isPending, 
+    error: error as Error | null 
+  }), [session, isPending, error]);
+
   return (
-    <AuthContext.Provider 
-      value={{ 
-        session: session ?? null, 
-        isPending, 
-        error: error as Error | null 
-      }}
-    >
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );

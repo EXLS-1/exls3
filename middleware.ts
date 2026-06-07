@@ -1,32 +1,27 @@
-import { betterFetch } from "@better-auth/fetch";
 import { NextResponse, type NextRequest } from "next/server";
+import { getSessionCookie } from "better-auth";
 
-export default async function middleware(request: NextRequest) {
-  // On vérifie la session via l'API interne de Better-Auth
-  const { data: session } = await betterFetch<{
-    user: { id: string; email: string; role: string };
-    session: { userId: string };
-  }>("/api/auth/get-session", {
-    baseURL: request.nextUrl.origin,
-    headers: {
-      // Important : on passe le cookie pour que le serveur identifie la session
-      cookie: request.headers.get("cookie") || "",
-    },
-  });
+export async function middleware(request: NextRequest) {
+  const sessionCookie = getSessionCookie(request); // Plus rapide que de fetch l'API entière
 
-  const isAuthPage = request.nextUrl.pathname.startsWith("/login");
+  // Routes nécessitant une connexion
+  const isProtectedRoute = request.nextUrl.pathname.startsWith("/attendance") || 
+                           request.nextUrl.pathname.startsWith("/dashboard");
+  
+  // Route de login
+  const isAuthRoute = request.nextUrl.pathname.startsWith("/login");
 
-  if (!session && !isAuthPage) {
+  if (isProtectedRoute && !sessionCookie) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
-  if (session && isAuthPage) {
-    return NextResponse.redirect(new URL("/dashboard", request.url));
+  if (isAuthRoute && sessionCookie) {
+    return NextResponse.redirect(new URL("/attendance", request.url));
   }
 
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
+  matcher: ["/attendance/:path*", "/dashboard/:path*", "/login"],
 };

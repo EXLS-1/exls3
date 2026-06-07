@@ -1,23 +1,61 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  /* 1. Liaison des utilitaires Tailwind aux variables CSS réactives */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
 }
 
-@media (prefers-color-scheme: dark) {
+@layer base {
+  /* 2. Définition des valeurs pour le mode Clair */
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #ffffff; /* Zinc-50 */
+    --foreground: #09090b; /* Zinc-950 */
+    --card: #ffffff;
+    --card-foreground: #09090b;
+    --primary: #18181b; /* Zinc-900 */
+    --primary-foreground: #fafafa;
+    --border: #e4e4e7; /* Zinc-200 */
+    --input: #e4e4e7;
+    --ring: #18181b;
+    --radius: 0.75rem;
+  }
+
+  /* 3. Définition des valeurs pour le mode Sombre */
+  /* next-themes applique la classe .dark à l'élément html */
+  .dark {
+    --background: #09090b;
+    --foreground: #fafafa;
+    --card: #09090b;
+    --card-foreground: #fafafa;
+    --primary: #fafafa;
+    --primary-foreground: #18181b;
+    --border: #27272a; /* Zinc-800 */
+    --input: #27272a;
+    --ring: #d4d4d8;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer base {
+  * {
+    @apply border-border outline-ring;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+  }
 }
