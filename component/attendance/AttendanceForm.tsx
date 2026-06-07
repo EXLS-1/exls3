@@ -1,4 +1,10 @@
-// AttendanceForm.tsx
+// Component/attendance/AttendanceForm.tsx
+// Ce composant React est utilisé pour afficher un formulaire permettant aux employés de saisir leur heure d'arrivée pour une mission spécifique. Il utilise la fonction logEmployeeArrival définie dans attendance.ts pour traiter les données du formulaire côté serveur.
+// Le composant reçoit les props missionId, employeeId et missionDate, qui sont nécessaires pour identifier la mission et l'employé concernés. Ces données sont transmises au serveur via des champs cachés dans le formulaire.
+// Le composant utilise le hook useActionState pour gérer l'état de l'action logEmployeeArrival, ce qui permet d'afficher des messages de succès ou d'erreur en fonction du résultat de l'action. Il gère également l'état de chargement pour désactiver le formulaire pendant le traitement de la soumission.
+// Importations nécessaires pour le composant AttendanceForm
+// - useActionState : pour gérer l'état de l'action côté client
+// - logEmployeeArrival : la fonction d'action qui traite les données du formulaire côté serveur et interagit avec la base de données pour enregistrer l'heure d'arrivée de l'employé.
 
 "use client";
 

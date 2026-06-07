@@ -1,4 +1,14 @@
-// 
+// component/attendance/attendance.ts
+// Ce fichier contient la logique métier pour l'enregistrement de l'heure d'arrivée d'un employé à une mission.
+// Il est utilisé par le composant AttendanceForm pour traiter les données du formulaire côté serveur.
+// "use server" indique que cette fonction doit être exécutée côté serveur, ce qui permet d'accéder à la base de données et à la session utilisateur de manière sécurisée.
+// La fonction logEmployeeArrival reçoit l'état précédent et les données du formulaire, valide les données, vérifie la session utilisateur, puis crée un nouvel enregistrement de présence dans la base de données. En cas de succès, elle déclenche une revalidation de la page d'attendance pour afficher les nouvelles données. En cas d'erreur, elle retourne un message d'erreur approprié.
+// Importations nécessaires pour la fonction logEmployeeArrival
+// - prisma : pour interagir avec la base de données
+// - auth : pour vérifier la session utilisateur
+// - headers : pour accéder aux en-têtes de la requête, nécessaires pour l'authentification
+// - z : pour valider les données du formulaire
+// - revalidatePath : pour déclencher une revalidation de la page après une mise à jour de la base de données
 
 "use server";
 

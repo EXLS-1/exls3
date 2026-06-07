@@ -1,6 +1,6 @@
 "use client";
 
-import { useNotificationStore } from "@/lib/prisma/useNotificationStore";
+import { useNotificationStore } from "@/store/useNotificationStore";
 import { useEffect, useState } from "react";
 
 export function Toast() {
