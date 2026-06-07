@@ -2,9 +2,8 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   serverExternalPackages: ["better-auth", "@prisma/client"],
-  experimental: {
-    turbo: {},
-  },
+  turbo: {},
+  experimental: {},
 };
 
 export default nextConfig;
