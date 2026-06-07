@@ -1,27 +1,7 @@
 @import "tailwindcss";
 
-@theme {
-  /* 1. Liaison des utilitaires Tailwind aux variables CSS réactives */
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  
-  --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground);
-
-  --color-primary: var(--primary);
-  --color-primary-foreground: var(--primary-foreground);
-
-  --color-border: var(--border);
-  --color-input: var(--input);
-  --color-ring: var(--ring);
-
-  --radius-xl: calc(var(--radius) + 4px);
-  --radius-lg: var(--radius);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-sm: calc(var(--radius) - 4px);
-}
-
 @layer base {
+  /* 1. Liaison des utilitaires Tailwind aux variables CSS réactives */
   /* 2. Définition des valeurs pour le mode Clair */
   :root {
     --background: #ffffff; /* Zinc-50 */
@@ -53,9 +33,13 @@
 
 @layer base {
   * {
-    @apply border-border outline-ring;
+    border-color: var(--border);
+    outline-color: var(--ring);
   }
   body {
-    @apply bg-background text-foreground antialiased;
+    background-color: var(--background);
+    color: var(--foreground);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 }

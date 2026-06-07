@@ -1,3 +1,5 @@
+
+// app/loading.tsx
 // This is a placeholder component that will be displayed while the main page when loading.
 // It uses the same background and layout structure to avoid any visual flash when the main content loads.
 

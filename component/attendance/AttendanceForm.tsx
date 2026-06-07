@@ -1,15 +1,9 @@
-// Component/attendance/AttendanceForm.tsx
-// Ce composant React est utilisé pour afficher un formulaire permettant aux employés de saisir leur heure d'arrivée pour une mission spécifique. Il utilise la fonction logEmployeeArrival définie dans attendance.ts pour traiter les données du formulaire côté serveur.
-// Le composant reçoit les props missionId, employeeId et missionDate, qui sont nécessaires pour identifier la mission et l'employé concernés. Ces données sont transmises au serveur via des champs cachés dans le formulaire.
-// Le composant utilise le hook useActionState pour gérer l'état de l'action logEmployeeArrival, ce qui permet d'afficher des messages de succès ou d'erreur en fonction du résultat de l'action. Il gère également l'état de chargement pour désactiver le formulaire pendant le traitement de la soumission.
-// Importations nécessaires pour le composant AttendanceForm
-// - useActionState : pour gérer l'état de l'action côté client
-// - logEmployeeArrival : la fonction d'action qui traite les données du formulaire côté serveur et interagit avec la base de données pour enregistrer l'heure d'arrivée de l'employé.
-
+// components/attendance/AttendanceForm.tsx
 "use client";
 
+import React, { JSX } from "react";
 import { useActionState } from "react";
-import { logEmployeeArrival, type AttendanceState } from "@/actions/attendance";
+import { logEmployeeArrival, type AttendanceState } from "@/app/actions/attendance";
 
 interface AttendanceFormProps {
   missionId: string;
@@ -20,29 +14,34 @@ interface AttendanceFormProps {
 const initialState: AttendanceState = {};
 
 export function AttendanceForm({ missionId, employeeId, missionDate }: AttendanceFormProps) {
-  const [state, action, isPending] = useActionState(logEmployeeArrival, initialState);
+  // Liaison sécurisée des identifiants à l'action serveur
+  const logArrivalWithContext = logEmployeeArrival.bind(null, { 
+    missionId, 
+    employeeId, 
+    missionDate 
+  });
+  
+  const [state, action, isPending] = useActionState(logArrivalWithContext, initialState);
 
   return (
     <form action={action} className="flex items-center gap-3">
-      {/* Champs cachés pour transmettre les IDs au serveur */}
-      <input type="hidden" name="missionId" value={missionId} />
-      <input type="hidden" name="employeeId" value={employeeId} />
-      <input type="hidden" name="missionDate" value={missionDate} />
-
       <div className="relative">
+        <label htmlFor="timeArrival" className="sr-only">Heure d'arrivée</label>
         <input
+          id="timeArrival"
           type="time"
           name="timeArrival"
           required
           disabled={isPending}
-          className="block w-full rounded-md border-0 py-1.5 text-zinc-900 shadow-sm ring-1 ring-inset ring-zinc-300 placeholder:text-zinc-400 focus:ring-2 focus:ring-inset focus:ring-zinc-900 sm:text-sm sm:leading-6 disabled:bg-zinc-50 disabled:text-zinc-500"
+          title="Entrez l'heure d'arrivée"
+          className="block w-full rounded-md border-0 py-1.5 text-blue-950 shadow-sm ring-1 ring-inset ring-blue-200 placeholder:text-blue-400 focus:ring-2 focus:ring-inset focus:ring-blue-700 sm:text-sm sm:leading-6 disabled:bg-slate-50 disabled:text-slate-500"
         />
       </div>
 
       <button
         type="submit"
         disabled={isPending}
-        className="inline-flex justify-center rounded-md bg-zinc-900 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-zinc-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-900 disabled:opacity-50 transition-all"
+        className="inline-flex justify-center rounded-md bg-blue-700 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-700 disabled:opacity-50 transition-all"
       >
         {isPending ? (
           <span className="flex items-center gap-2">
@@ -57,11 +56,12 @@ export function AttendanceForm({ missionId, employeeId, missionDate }: Attendanc
         )}
       </button>
 
+      {/* Affichage des états avec la nouvelle charte */}
       {state.error && (
-        <p className="text-xs font-medium text-red-600 animate-pulse">{state.error}</p>
+        <p className="text-xs font-semibold text-red-600 animate-pulse">{state.error}</p>
       )}
       {state.success && (
-        <p className="text-xs font-medium text-green-600">Enregistré !</p>
+        <p className="text-xs font-semibold text-blue-600">Enregistré !</p>
       )}
     </form>
   );

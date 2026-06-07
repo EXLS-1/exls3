@@ -1,3 +1,5 @@
+// component/layout/Header.tsx
+
 "use client";
 
 import { authClient } from "@/lib/auth/auth-client";

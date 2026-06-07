@@ -1,9 +1,8 @@
-
-
+// components/attendance/AttendanceFilters.tsx
 "use client";
 
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
-import { useTransition } from "react";
+import { useCallback, useTransition } from "react";
 
 interface MissionOption {
   id: string;
@@ -24,56 +23,99 @@ export function AttendanceFilters({
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  
+  // useTransition permet de garder l'UI réactive pendant que le serveur traite la nouvelle URL
   const [isPending, startTransition] = useTransition();
 
-  const updateFilters = (key: string, value: string) => {
-    const params = new URLSearchParams(searchParams.toString());
-    if (value) {
-      params.set(key, value);
-    } else {
-      params.delete(key);
-    }
+  // Fonction utilitaire pour manipuler les paramètres d'URL proprement
+  const createQueryString = useCallback(
+    (name: string, value: string) => {
+      const params = new URLSearchParams(searchParams.toString());
+      if (value) {
+        params.set(name, value);
+      } else {
+        params.delete(name);
+      }
+      return params.toString();
+    },
+    [searchParams]
+  );
 
-    // Si on change la date, on réinitialise souvent la mission car les missions dépendent de la date
-    if (key === "date") {
-      params.delete("missionId");
-    }
-
+  const handleFilterChange = (name: string, value: string) => {
     startTransition(() => {
-      router.push(`${pathname}?${params.toString()}`);
+      router.push(`${pathname}?${createQueryString(name, value)}`, {
+        scroll: false, // Empêche la page de remonter tout en haut à chaque clic
+      });
     });
   };
 
+  const handleReset = () => {
+    startTransition(() => {
+      // Naviguer vers le chemin de base efface tous les paramètres (retour aux valeurs par défaut du serveur)
+      router.push(pathname, { scroll: false });
+    });
+  };
+
+  // On affiche le bouton de réinitialisation uniquement si des filtres modifient la vue par défaut
+  const hasActiveFilters = searchParams.has("missionId") || searchParams.has("date");
+
   return (
-    <div className={`flex flex-col md:flex-row md:items-end gap-4 bg-white p-6 rounded-2xl border border-zinc-200 shadow-sm transition-opacity ${isPending ? "opacity-70" : "opacity-100"}`}>
-      <div className="flex-1 space-y-2">
-        <label className="text-sm font-semibold text-zinc-700 flex items-center gap-2">
-          Date de mission
-          {isPending && <span className="size-2 bg-zinc-400 rounded-full animate-pulse" />}
-        </label>
-        <input
-          type="date"
-          defaultValue={initialDate}
-          onChange={(e) => updateFilters("date", e.target.value)}
-          className="w-full rounded-xl border-zinc-200 focus:ring-zinc-900 focus:border-zinc-900 bg-white px-3 py-2 text-sm shadow-sm transition-all"
-        />
+    <div className="bg-white p-4 rounded-2xl border border-blue-100 shadow-sm flex flex-col md:flex-row items-center gap-4 transition-opacity">
+      {/* Indicateur de chargement subtil lors des requêtes serveur */}
+      <div className={`w-full flex flex-col md:flex-row gap-4 ${isPending ? 'opacity-60 pointer-events-none' : 'opacity-100'} transition-opacity duration-200`}>
+        
+        {/* Filtre Date */}
+        <div className="flex-1 w-full relative">
+          <label htmlFor="date" className="block text-xs font-bold text-blue-900 uppercase tracking-wider mb-1.5">
+            Date d'opération
+          </label>
+          <input
+            type="date"
+            id="date"
+            value={initialDate}
+            onChange={(e) => handleFilterChange("date", e.target.value)}
+            className="block w-full rounded-lg border-0 py-2.5 px-3 text-blue-950 shadow-sm ring-1 ring-inset ring-blue-200 focus:ring-2 focus:ring-inset focus:ring-blue-700 sm:text-sm sm:leading-6 bg-slate-50 transition-all"
+          />
+        </div>
+
+        {/* Filtre Mission */}
+        <div className="flex-[2] w-full relative">
+          <label htmlFor="mission" className="block text-xs font-bold text-blue-900 uppercase tracking-wider mb-1.5">
+            Sélectionner une mission
+          </label>
+          <select
+            id="mission"
+            value={initialMissionId}
+            onChange={(e) => handleFilterChange("missionId", e.target.value)}
+            className="block w-full rounded-lg border-0 py-2.5 px-3 text-blue-950 shadow-sm ring-1 ring-inset ring-blue-200 focus:ring-2 focus:ring-inset focus:ring-blue-700 sm:text-sm sm:leading-6 bg-slate-50 transition-all"
+          >
+            <option value="" className="text-blue-400">
+              -- Toutes les missions --
+            </option>
+            {missions.map((mission) => (
+              <option key={mission.id} value={mission.id}>
+                {mission.label}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
 
-      <div className="flex-1 space-y-2">
-        <label className="text-sm font-semibold text-zinc-700">Sélectionner la mission</label>
-        <select
-          value={initialMissionId}
-          onChange={(e) => updateFilters("missionId", e.target.value)}
-          className="w-full rounded-xl border-zinc-200 focus:ring-zinc-900 focus:border-zinc-900 bg-white px-3 py-2 text-sm shadow-sm transition-all"
-        >
-          <option value="">Choisir une mission...</option>
-          {missions.map((m) => (
-            <option key={m.id} value={m.id}>
-              {m.label}
-            </option>
-          ))}
-        </select>
-      </div>
+      {/* Bouton de réinitialisation (Action Rouge) */}
+      {hasActiveFilters && (
+        <div className="w-full md:w-auto md:self-end mt-4 md:mt-0 flex shrink-0">
+          <button
+            onClick={handleReset}
+            disabled={isPending}
+            className="w-full inline-flex items-center justify-center gap-2 rounded-lg bg-red-50 px-4 py-2.5 text-sm font-semibold text-red-600 shadow-sm ring-1 ring-inset ring-red-200 hover:bg-red-100 hover:text-red-700 focus:ring-2 focus:ring-inset focus:ring-red-600 transition-all disabled:opacity-50"
+          >
+            <svg className="size-4" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+            Réinitialiser
+          </button>
+        </div>
+      )}
     </div>
   );
 }

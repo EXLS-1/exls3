@@ -1,3 +1,5 @@
+// component/layout/Sidebar.tsx
+
 "use client";
 
 import Link from "next/link";

@@ -1,25 +1,17 @@
-import { prisma } from "@/lib/prisma";
+// app/attendance/page.tsx
+
 import { auth } from "@/lib/auth/auth";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { AttendanceForm } from "@/component/attendance/AttendanceForm";
-import { AttendanceFilters } from "@/component/attendance/AttendanceFilters";
-import { Header } from "@/component/layout/Header";
-import { format } from "date-fns";
-import { fr } from "date-fns/locale";
+import { prisma } from "@/lib/prisma";
+import { AttendanceFilters } from "@/components/attendance/AttendanceFilters";
+import { AttendanceForm } from "@/components/attendance/AttendanceForm";
 
-interface PageProps {
-  searchParams: Promise<{ date?: string; missionId?: string }>;
-}
+// En Next.js 15+, searchParams est une Promesse
+type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
 
-function formatTime(date: Date) {
-  return new Intl.DateTimeFormat("fr-FR", {
-    hour: "2-digit",
-    minute: "2-digit",
-  }).format(date);
-}
-
-export default async function AttendancePage({ searchParams }: PageProps) {
+export default async function AttendancePage(props: { searchParams: SearchParams }) {
+  // 1. Sécurité : Vérification stricte de la session côté serveur
   const session = await auth.api.getSession({
     headers: await headers(),
   });
@@ -28,130 +20,153 @@ export default async function AttendancePage({ searchParams }: PageProps) {
     redirect("/login");
   }
 
-  const params = await searchParams;
-  const selectedDateStr = params.date || new Date().toISOString().split("T")[0];
-  const selectedMissionId = params.missionId;
+  // 2. Gestion des filtres via l'URL (URL comme unique source de vérité)
+  const searchParams = await props.searchParams;
+  
+  // Définit la date du jour par défaut (format YYYY-MM-DD local)
+  const today = new Date().toLocaleDateString("en-CA"); 
+  const selectedDate = (searchParams.date as string) || today;
+  const selectedMissionId = searchParams.missionId as string | undefined;
 
-  // Calcul des bornes de la journée pour le filtrage Prisma
-  const startOfDay = new Date(`${selectedDateStr}T00:00:00`);
-  const endOfDay = new Date(`${selectedDateStr}T23:59:59`);
-
-  // Récupération des missions pour la date sélectionnée (pour le sélecteur)
-  const dayMissions = await prisma.mission.findMany({
+  // 3. Récupération optimisée des données (Prisma)
+  
+  // A. Récupérer toutes les missions actives pour le filtre (Dropdown)
+  const missions = await prisma.mission.findMany({
     where: {
-      plannedStartAt: {
-        gte: startOfDay,
-        lte: endOfDay,
-      },
+      status: { in: ["PLANNED", "IN_PROGRESS"] },
+      // Optionnel : tu pourras affiner ici pour ne charger que les missions de `selectedDate`
     },
-    include: {
-      client: true,
-    },
-    orderBy: {
-      plannedStartAt: "asc",
-    },
+    select: { id: true, client: { select: { name: true } } },
+    orderBy: { createdAt: "desc" },
   });
 
-  // Si une mission est sélectionnée, on récupère les détails et le personnel
-  const activeMission = selectedMissionId
-    ? await prisma.mission.findUnique({
-        where: { id: selectedMissionId },
-        include: {
-          client: true,
-          employees: {
-            include: {
-              employee: {
-                include: {
-                  attendance: {
-                    where: { missionId: selectedMissionId },
-                    orderBy: { arrivedAt: "desc" },
-                  },
-                },
-              },
-            },
-          },
+  // Formatage pour le composant Client AttendanceFilters
+  const missionOptions = missions.map((m) => ({
+    id: m.id,
+    label: `Mission - ${m.client.name}`,
+  }));
+
+  // B. Récupérer les employés assignés SI une mission est sélectionnée
+  let assignedEmployees: any[] = [];
+  
+  if (selectedMissionId) {
+    // Requête relationnelle optimisée : on charge les employés de la mission ET leur pointage pour cette mission spécifique
+    assignedEmployees = await prisma.employee.findMany({
+      where: {
+        missions: { some: { missionId: selectedMissionId } },
+      },
+      include: {
+        attendance: {
+          where: { missionId: selectedMissionId },
+          take: 1, // On ne prend que le dernier pointage (sécurité contre les doublons)
         },
-      })
-    : null;
+      },
+      orderBy: { lastName: "asc" },
+    });
+  }
 
   return (
-    <>
-    <Header />
-    <div className="p-6 max-w-7xl mx-auto space-y-8">
-      <AttendanceFilters 
-        initialDate={selectedDateStr}
-        initialMissionId={selectedMissionId || ""}
-        missions={dayMissions.map(m => ({
-          id: m.id,
-          label: `${m.client.name} - ${formatTime(m.plannedStartAt)}`
-        }))}
-      />
-
-      {/* Liste du personnel et pointage */}
-      {activeMission ? (
-        <div className="bg-white rounded-2xl border border-zinc-200 shadow-sm overflow-hidden">
-          <div className="px-6 py-4 border-b border-zinc-100 bg-zinc-50/50 flex justify-between items-center">
-            <h2 className="font-bold text-zinc-900">
-              Personnel affecté - {activeMission.client.name}
-            </h2>
-            <span className="text-xs font-medium px-2.5 py-1 bg-zinc-200 text-zinc-700 rounded-full">
-              {activeMission.employees.length} agents prévus
-            </span>
+    <main className="flex-1 bg-slate-50 min-h-screen p-6">
+      <div className="max-w-6xl mx-auto space-y-6">
+        
+        {/* En-tête de page */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight text-blue-950">
+              Pointage & Présences
+            </h1>
+            <p className="text-sm text-blue-800/70 mt-1">
+              Gérez les arrivées du personnel sur le terrain en temps réel.
+            </p>
           </div>
+          <div className="inline-flex items-center px-3 py-1 rounded-full bg-blue-100 text-blue-800 text-xs font-bold border border-blue-200">
+            {today === selectedDate ? "Aujourd'hui" : "Archive"}
+          </div>
+        </div>
 
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm">
-              <thead className="text-zinc-500 font-medium border-b border-zinc-100">
-                <tr>
-                  <th className="px-6 py-4">Agent</th>
-                  <th className="px-6 py-4">Pointages effectués</th>
-                  <th className="px-6 py-4 text-right">Nouveau pointage</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-zinc-50">
-                {activeMission.employees.map(({ employee }) => (
-                  <tr key={employee.id} className="hover:bg-zinc-50/30 transition-colors">
-                    <td className="px-6 py-4">
-                      <p className="font-semibold text-zinc-900">{employee.lastName.toUpperCase()} {employee.firstName}</p>
-                      <p className="text-xs text-zinc-500">{employee.phone || "Pas de contact"}</p>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex flex-wrap gap-1.5">
-                        {employee.attendance.length > 0 ? (
-                          employee.attendance.map((log) => (
-                            <span key={log.id} className="inline-flex items-center px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-100 text-xs font-medium">
-                              {formatTime(log.arrivedAt)}
-                            </span>
-                          ))
-                        ) : (
-                          <span className="text-zinc-400 italic text-xs">Aucun pointage</span>
-                        )}
+        {/* Composant Client : Filtres (URL-driven) */}
+        <AttendanceFilters
+          initialDate={selectedDate}
+          initialMissionId={selectedMissionId || ""}
+          missions={missionOptions}
+        />
+
+        {/* Zone de contenu dynamique */}
+        {!selectedMissionId ? (
+          <div className="flex flex-col items-center justify-center p-12 bg-white rounded-2xl border border-blue-100 shadow-sm border-dashed">
+            <div className="size-12 rounded-full bg-blue-50 flex items-center justify-center mb-3">
+              <svg className="size-6 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+            </div>
+            <p className="text-blue-950 font-semibold">Aucune mission sélectionnée</p>
+            <p className="text-sm text-blue-800/60 mt-1">Veuillez choisir une mission pour afficher le personnel assigné.</p>
+          </div>
+        ) : (
+          <div className="bg-white rounded-2xl border border-blue-100 shadow-sm overflow-hidden">
+            <div className="p-4 border-b border-blue-50 bg-blue-950/5">
+              <h2 className="text-sm font-bold text-blue-950 uppercase tracking-wider">
+                Personnel Assigné ({assignedEmployees.length})
+              </h2>
+            </div>
+            
+            <ul className="divide-y divide-blue-50">
+              {assignedEmployees.map((employee) => {
+                const hasAttended = employee.attendance.length > 0;
+                const arrivalRecord = hasAttended ? employee.attendance[0] : null;
+
+                return (
+                  <li key={employee.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 gap-4 hover:bg-slate-50/50 transition-colors">
+                    <div className="flex items-center gap-3">
+                      <div className="size-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-800 font-bold border border-blue-200">
+                        {employee.firstName.charAt(0)}{employee.lastName.charAt(0)}
                       </div>
-                    </td>
-                    <td className="px-6 py-4 text-right">
-                      <AttendanceForm
-                        missionId={activeMission.id}
-                        employeeId={employee.id}
-                        missionDate={selectedDateStr}
-                      />
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                      <div>
+                        <p className="font-semibold text-blue-950">
+                          {employee.lastName} {employee.firstName}
+                        </p>
+                        <p className="text-xs font-medium text-blue-800/60">
+                          ID: {employee.id.split("-")[0].toUpperCase()}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center sm:justify-end">
+                      {hasAttended ? (
+                        <div className="flex items-center gap-2 px-3 py-1.5 bg-blue-50 border border-blue-200 rounded-lg">
+                          <svg className="size-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                          </svg>
+                          <span className="text-sm font-bold text-blue-900">
+                            Arrivé à {arrivalRecord.arrivedAt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          </span>
+                        </div>
+                      ) : (
+                        <div className="w-full sm:w-auto">
+                          {/* Le composant client gère l'action serveur.
+                            On lui passe les identifiants en props pour le binding sécurisé.
+                          */}
+                          <AttendanceForm
+                            missionId={selectedMissionId}
+                            employeeId={employee.id}
+                            missionDate={selectedDate}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </li>
+                );
+              })}
+
+              {assignedEmployees.length === 0 && (
+                <li className="p-8 text-center">
+                  <p className="text-sm text-red-600 font-semibold">Aucun agent assigné à cette mission.</p>
+                </li>
+              )}
+            </ul>
           </div>
-        </div>
-      ) : (
-        <div className="flex flex-col items-center justify-center py-20 bg-zinc-50 rounded-2xl border-2 border-dashed border-zinc-200">
-          <div className="size-12 bg-zinc-100 rounded-full flex items-center justify-center mb-4">
-            <svg className="size-6 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-            </svg>
-          </div>
-          <p className="text-zinc-500 font-medium">Sélectionnez une mission pour commencer le pointage</p>
-        </div>
-      )}
-    </div>
-    </>
+        )}
+      </div>
+    </main>
   );
 }
