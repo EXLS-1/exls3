@@ -1,7 +1,11 @@
-import { NextResponse, type NextRequest } from "next/server";
-import { getSessionCookie } from "better-auth";
+// proxy.ts
 
-export async function middleware(request: NextRequest) {
+import { NextResponse, type NextRequest } from "next/server";
+import { getSessionCookie } from "better-auth/next-js";
+
+export const runtime = "nodejs"; // Assure la compatibilité totale avec les modules Node
+
+export async function proxy(request: NextRequest) {
   const sessionCookie = getSessionCookie(request); // Plus rapide que de fetch l'API entière
 
   // Routes nécessitant une connexion
