@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import PrismaClient from "@prisma/client";
 import { Pool } from "pg";
 import { PrismaPg } from "@prisma/adapter-pg";
 
@@ -6,16 +6,25 @@ import { PrismaPg } from "@prisma/adapter-pg";
  * Singleton instance de PrismaClient optimisée pour Next.js 16 avec adapter-pg.
  */
 const prismaClientSingleton = () => {
-  // 1. Créer un pool de connexions PostgreSQL en utilisant votre variable d'environnement
-  const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+  const connectionString = process.env.DATABASE_URL;
+
+  if (!connectionString) {
+    throw new Error("La variable d'environnement DATABASE_URL est manquante.");
+  }
+
+  // 1. Créer un pool de connexions optimisé
+  const pool = new Pool({ 
+    connectionString,
+    max: 20, // Ajustez selon les limites de votre instance Supabase
+    idleTimeoutMillis: 30000,
+    connectionTimeoutMillis: 2000,
+  });
   
-  // 2. Initialiser l'adaptateur Prisma pour PostgreSQL
   const adapter = new PrismaPg(pool);
   
-  // 3. Instancier le PrismaClient en lui injectant l'adaptateur
   return new PrismaClient({
-    adapter: adapter,
-    log: process.env.NODE_ENV === "development" ? ["query", "error", "warn"] : ["error"],
+    adapter,
+    log: process.env.NODE_ENV === "development" ? ["error", "warn"] : ["error"],
   });
 };
 
