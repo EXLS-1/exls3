@@ -1,6 +1,13 @@
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth/auth";
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { AttendanceForm } from "@/component/attendance/AttendanceForm";
+import { AttendanceFilters } from "@/component/attendance/AttendanceFilters";
+import { Header } from "@/component/layout/Header";
+import { format } from "date-fns";
+import { fr } from "date-fns/locale";
+
 interface PageProps {
   searchParams: Promise<{ date?: string; missionId?: string }>;
 }
@@ -14,6 +21,8 @@ function formatTime(date: Date) {
 
 export default async function AttendancePage({ searchParams }: PageProps) {
   const session = await auth.api.getSession({
+    headers: await headers(),
+  });
 
   if (!session) {
     redirect("/login");
@@ -66,38 +75,17 @@ export default async function AttendancePage({ searchParams }: PageProps) {
     : null;
 
   return (
+    <>
+    <Header />
     <div className="p-6 max-w-7xl mx-auto space-y-8">
-      {/* Header & Filtres */}
-      <div className="flex flex-col md:flex-row md:items-end gap-4 bg-white p-6 rounded-2xl border border-zinc-200 shadow-sm">
-        <div className="flex-1 space-y-2">
-          <label className="text-sm font-semibold text-zinc-700">Date de mission</label>
-          <form>
-            <input
-              type="date"
-              name="date"
-              defaultValue={selectedDateStr}
-              className="w-full rounded-xl border-zinc-200 focus:ring-zinc-900 focus:border-zinc-900"
-              onBlur={(e) => (window.location.href = `/attendance?date=${e.target.value}`)}
-            />
-          </form>
-        </div>
-
-        <div className="flex-1 space-y-2">
-          <label className="text-sm font-semibold text-zinc-700">Sélectionner la mission</label>
-          <select
-            className="w-full rounded-xl border-zinc-200 focus:ring-zinc-900 focus:border-zinc-900"
-            defaultValue={selectedMissionId || ""}
-            onChange={(e) => (window.location.href = `/attendance?date=${selectedDateStr}&missionId=${e.target.value}`)}
-          >
-            <option value="">Choisir une mission...</option>
-            {dayMissions.map((m) => (
-              <option key={m.id} value={m.id}>
-                {m.client.name} - {format(m.plannedStartAt, "HH:mm")}
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
+      <AttendanceFilters 
+        initialDate={selectedDateStr}
+        initialMissionId={selectedMissionId || ""}
+        missions={dayMissions.map(m => ({
+          id: m.id,
+          label: `${m.client.name} - ${formatTime(m.plannedStartAt)}`
+        }))}
+      />
 
       {/* Liste du personnel et pointage */}
       {activeMission ? (
@@ -132,7 +120,7 @@ export default async function AttendancePage({ searchParams }: PageProps) {
                         {employee.attendance.length > 0 ? (
                           employee.attendance.map((log) => (
                             <span key={log.id} className="inline-flex items-center px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-100 text-xs font-medium">
-                              {format(log.arrivedAt, "HH:mm")}
+                              {formatTime(log.arrivedAt)}
                             </span>
                           ))
                         ) : (
@@ -164,5 +152,6 @@ export default async function AttendancePage({ searchParams }: PageProps) {
         </div>
       )}
     </div>
+    </>
   );
 }
