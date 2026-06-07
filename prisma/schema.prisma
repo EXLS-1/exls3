@@ -32,6 +32,13 @@ enum UserRole {
   SUPERVISOR
 }
 
+enum MissionStatus {
+  PLANNED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
 model Session {
   id        String   @id @default(uuid(7))
   expiresAt DateTime
@@ -92,33 +99,6 @@ model Employee {
   @@map("employees")
 }
 
-model Client {
-  id        String    @id @default(uuid(7))
-  name      String
-  contact   String?
-  missions  Mission[]
-  createdAt DateTime  @default(now())
-
-  @@map("clients")
-}
-
-model Mission {
-  id             String   @id @default(uuid(7))
-  clientId       String
-  client         Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
-  
-  // Utilisation d'un DateTime complet pour simplifier les comparaisons temporelles
-  plannedStartAt DateTime 
-  status         String   @default("PLANNED") // PLANNED, IN_PROGRESS, COMPLETED
-  
-  employees  MissionEmployee[]
-  attendance AttendanceRecord[]
-  createdAt  DateTime @default(now())
-
-  @@index([clientId, plannedStartAt])
-  @@map("missions")
-}
-
 model MissionEmployee {
   missionId  String
   employeeId String
@@ -130,19 +110,82 @@ model MissionEmployee {
   @@map("mission_employees")
 }
 
+model Client {
+  id        String    @id @default(uuid(7))
+  name      String
+  contact   String?
+  
+  sites     Site[]    // Un client possède plusieurs sites
+  missions  Mission[] 
+  
+  createdAt DateTime  @default(now())
+  deletedAt DateTime? 
+
+  @@map("clients")
+}
+
+// NOUVELLE TABLE : SITE
+model Site {
+  id        String   @id @default(uuid(7))
+  name      String   // ex: "Agence Centrale", "Entrepôt Nord"
+  address   String?
+  
+  // Clé étrangère vers le Client
+  clientId  String
+  client    Client   @relation(fields: [clientId], references: [id], onDelete: Restrict)
+  
+  // Relations descendantes
+  missions   Mission[]
+  attendance AttendanceRecord[] // Lien direct pour les requêtes géographiques rapides
+  
+  createdAt DateTime  @default(now())
+  deletedAt DateTime? // Soft delete
+
+  @@map("sites")
+}
+
+model Mission {
+  id             String   @id @default(uuid(7))
+  
+  clientId       String
+  client         Client   @relation(fields: [clientId], references: [id], onDelete: Restrict)
+  
+  siteId         String
+  site           Site     @relation(fields: [siteId], references: [id], onDelete: Restrict)
+  
+  plannedStartAt DateTime 
+  status         MissionStatus @default(PLANNED) 
+  
+  employees      MissionEmployee[]
+  attendance     AttendanceRecord[]
+  createdAt      DateTime @default(now())
+
+  // L'index intègre désormais le site pour des recherches optimisées
+  @@index([siteId, plannedStartAt])
+  @@map("missions")
+}
 model AttendanceRecord {
   id          String   @id @default(uuid(7))
   missionId   String
   employeeId  String
-  arrivedAt   DateTime // Date + Heure exacte du pointage
   
-  mission     Mission  @relation(fields: [missionId], references: [id], onDelete: Cascade)
-  employee    Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  siteId      String
+  
+  arrivedAt   DateTime 
+  departedAt  DateTime? // Ajout anticipé pour la fin de service
+  
+  mission     Mission  @relation(fields: [missionId], references: [id], onDelete: Restrict)
+  employee    Employee @relation(fields: [employeeId], references: [id], onDelete: Restrict)
+  site        Site     @relation(fields: [siteId], references: [id], onDelete: Restrict)
   
   createdById String
   createdBy   User     @relation(fields: [createdById], references: [id])
   createdAt   DateTime @default(now())
 
-  @@index([missionId, employeeId])
+  // Double contrainte d'unicité pour éviter le double pointage d'un agent sur une même mission
+  @@unique([missionId, employeeId]) 
+  @@index([arrivedAt(sort: Desc)])
+  @@index([siteId, arrivedAt]) // Index géographique hyper-rapide
+  
   @@map("attendance_records")
 }
