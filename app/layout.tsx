@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Toast } from "@/component/ui/Toast";
-import { AuthProvider } from "@/lib/auth/auth-provider";
+import { RootProvider } from "@/lib/provider/root-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "EXCELLENT SERVICE - ERP",
+  title: "EXCELLENT SERVICE",
   description: "Gestion intelligente du personnel et des activités de gardiennage (EXLS)",
 };
 
@@ -28,13 +28,14 @@ export default function RootLayout({
     <html
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      suppressHydrationWarning
     >
-      <AuthProvider>
-        <body className="min-h-full flex flex-col bg-zinc-50 text-zinc-900">
+      <body className="min-h-full flex flex-col bg-background text-foreground">
+        <RootProvider>
           {children}
           <Toast />
-        </body>
-      </AuthProvider>
+        </RootProvider>
+      </body>
     </html>
   );
 }

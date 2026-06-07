@@ -1,8 +1,11 @@
- "use client";
+// lib/provider/auth-provider.tsx
+// Ce fichier définit le AuthProvider, un composant React qui utilise Better-Auth pour gérer l'état d'authentification de l'utilisateur.
+
+"use client";
 
 import { createContext, useContext, ReactNode, useEffect, useMemo } from "react";
-import { authClient } from "./auth-client";
-import { useUserStore } from "@/lib/store/useUserStore";
+import { authClient } from "@/lib/auth/auth-client";
+import { useUserStore } from "@/store/useUserStore";
 
 /**
  * Inférence du type de session directement depuis la configuration du client Better-Auth.
