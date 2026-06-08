@@ -5,14 +5,18 @@
 // Note : Assurez-vous que le ThemeProvider est utilisé dans un contexte client (client-side rendering) et n'utilise pas de fonctionnalités spécifiques au serveur (server-side rendering), car il gère un état d'interface utilisateur qui est pertinent uniquement pour le client.
 // En résumé, ThemeProvider est un composant de contexte qui gère les thèmes de l'application et fournit des fonctionnalités pour basculer entre les thèmes à tous les composants enfants qui en ont besoin.
 
-"use client";
+"use client"; // 👈 OBLIGATOIRE : Force l'exécution côté client
 
+import * as React from "react";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
-import { ReactNode } from "react";
+import type { ComponentProps } from "react";
 
-export function ThemeProvider({ children }: { children: ReactNode }) {
+// Typage professionnel et extensible pour les props du provider
+type ThemeProviderProps = ComponentProps<typeof NextThemesProvider>;
+
+export function ThemeProvider({ children, ...props }: ThemeProviderProps) {
   return (
-    <NextThemesProvider attribute="class" defaultTheme="system" enableSystem>
+    <NextThemesProvider {...props}>
       {children}
     </NextThemesProvider>
   );

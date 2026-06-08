@@ -1,13 +1,12 @@
 // app/page.tsx
-// @ts-nocheck
-/// <reference types="react" />
 
 import Link from "next/link";
-import { auth } from "@/lib/auth/auth";
+import { getServerSession } from "@/lib/auth/session";
 
 export default async function Home() {
-  // Logique serveur : Récupération sécurisée de la session
-  const session = await auth();
+  // Récupération sécurisée de la session via l'API de Better-Auth
+  const session = await getServerSession();
+  
   return (
     <main className="flex-1 flex flex-col items-center justify-center p-6 text-center">
       {/* Décoration de fond : Teinte subtile bleutée */}
