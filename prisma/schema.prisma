@@ -1,12 +1,11 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
 }
 
 datasource db {
   provider = "postgresql"
 }
-
-// --- BETTER-AUTH TABLES ---
 
 model User {
   id            String    @id @default(uuid(7))
@@ -188,4 +187,34 @@ model AttendanceRecord {
   @@index([siteId, arrivedAt]) // Index géographique hyper-rapide
   
   @@map("attendance_records")
+}
+
+// --- NOUVELLES TABLES POUR LES PRODUITS ET IMAGES ---
+
+model Product {
+  id          String         @id @default(uuid())
+  name        String
+  description String?
+  price       Decimal        @db.Decimal(10, 2)
+  slug        String         @unique // Pour des URL SEO-friendly
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  images      ProductImage[] // Relation vers les images du produit
+
+  @@map("products")
+}
+
+model ProductImage {
+  id        String   @id @default(uuid())
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  url       String   // L'URL publique de l'image sur Supabase Storage
+  altText   String?  // Texte alternatif pour l'accessibilité
+  isPrimary Boolean  @default(false) // Pour l'image principale/miniature
+  order     Int      @default(0) // Pour l'ordre d'affichage des images
+  createdAt DateTime @default(now())
+
+  @@unique([productId, url]) // S'assure qu'une image n'est pas ajoutée deux fois au même produit
+  @@map("product_images")
+}
 }
