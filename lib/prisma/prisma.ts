@@ -1,4 +1,11 @@
-import PrismaClient from "@prisma/client";
+// lib/prisma/prisma.ts
+// Some setups expose PrismaClient as a CJS default export. Import defensively to avoid
+// "Module '@prisma/client' has no exported member 'PrismaClient'" TypeScript errors.
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+
+import pkg from "@prisma/client";
+const { PrismaClient } = pkg as any;
 import { Pool } from "pg";
 import { PrismaPg } from "@prisma/adapter-pg";
 
