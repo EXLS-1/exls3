@@ -1,6 +1,6 @@
+
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["driverAdapters"]
 }
 
 datasource db {
@@ -82,8 +82,6 @@ model Verification {
   @@map("verification")
 }
 
-// --- EXLS BUSINESS TABLES ---
-
 model Employee {
   id        String   @id @default(uuid(7))
   firstName String
@@ -123,7 +121,6 @@ model Client {
   @@map("clients")
 }
 
-// NOUVELLE TABLE : SITE
 model Site {
   id        String   @id @default(uuid(7))
   name      String   // ex: "Agence Centrale", "Entrepôt Nord"
@@ -163,6 +160,7 @@ model Mission {
   @@index([siteId, plannedStartAt])
   @@map("missions")
 }
+
 model AttendanceRecord {
   id          String   @id @default(uuid(7))
   missionId   String
@@ -189,8 +187,6 @@ model AttendanceRecord {
   @@map("attendance_records")
 }
 
-// --- NOUVELLES TABLES POUR LES PRODUITS ET IMAGES ---
-
 model Product {
   id          String         @id @default(uuid())
   name        String
@@ -216,5 +212,4 @@ model ProductImage {
 
   @@unique([productId, url]) // S'assure qu'une image n'est pas ajoutée deux fois au même produit
   @@map("product_images")
-}
 }
