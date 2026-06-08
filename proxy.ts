@@ -1,15 +1,30 @@
 // proxy.ts
 
 import { NextResponse, type NextRequest } from "next/server";
-import { getSessionCookie } from "better-auth/next-js";
 
-export const runtime = "nodejs"; // Assure la compatibilité totale avec les modules Node
+/**
+ * Extrait le token de session sans validation DB pour une performance maximale.
+ * Better-Auth utilise par défaut 'better-auth.session_token'.
+ */
+function getSessionCookie(request: NextRequest) {
+  return (
+    request.cookies.get("better-auth.session_token")?.value ||
+    request.cookies.get("__Secure-better-auth.session_token")?.value
+  );
+}
 
 export async function proxy(request: NextRequest) {
-  const sessionCookie = getSessionCookie(request); // Plus rapide que de fetch l'API entière
+  const { pathname } = request.nextUrl;
+
+  // Optimisation : Ignorer les assets statiques et les requêtes internes
+  if (pathname.startsWith("/_next") || pathname.includes(".")) {
+    return NextResponse.next();
+  }
+
+  const sessionCookie = getSessionCookie(request);
 
   // Routes nécessitant une connexion
-  const isProtectedRoute = request.nextUrl.pathname.startsWith("/attendance") || 
+  const isProtectedRoute = request.nextUrl.pathname.startsWith("/attendance") ||
                            request.nextUrl.pathname.startsWith("/dashboard");
   
   // Route de login
@@ -25,7 +40,3 @@ export async function proxy(request: NextRequest) {
 
   return NextResponse.next();
 }
-
-export const config = {
-  matcher: ["/attendance/:path*", "/dashboard/:path*", "/login"],
-};
