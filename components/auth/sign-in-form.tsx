@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { SignInButton } from "./sign-in-button";
+import { OAuthButtons } from "./oauth-buttons";
 
 const signInSchema = z.object({
   email: z.string().email("Adresse email invalide"),
@@ -81,7 +82,19 @@ export function SignInForm() {
             </FormItem>
           )}
         />
+           
         <SignInButton isLoading={isLoading} />
+        
+        {/* 👇 SÉPARATEUR ET BOUTONS SOCIAUX */}
+        <div className="relative my-6">
+          <div className="absolute inset-0 flex items-center">
+            <span className="w-full border-t border-zinc-200" />
+          </div>
+          <div className="relative flex justify-center text-xs uppercase">
+            <span className="bg-white px-2 text-zinc-500">ou continuer avec</span>
+          </div>
+        </div>
+        <OAuthButtons />
       </form>
     </Form>
   );
