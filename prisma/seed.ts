@@ -1,9 +1,9 @@
 // prisma/seed.ts
-// This is an example of a seed file that can be used to populate the database with initial data.
 
-import { PrismaClient, Prisma } from "../app/generated/prisma/client";
+import { PrismaClient } from "../app/generated/prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 import "dotenv/config";
+import { runSeeders } from "./seed";
 
 const adapter = new PrismaPg({
   connectionString: process.env.DATABASE_URL,
@@ -13,42 +13,17 @@ const prisma = new PrismaClient({
   adapter,
 });
 
-const userData: Prisma.UserCreateInput[] = [
-  {
-    name: "Scanner",
-    email: "excellentservice2exls@gmail.com",
-    posts: {
-      create: [
-        {
-          title: "Join the Prisma Discord",
-          content: "https://pris.ly/discord",
-          published: true,
-        },
-        {
-          title: "Prisma on YouTube",
-          content: "https://pris.ly/youtube",
-        },
-      ],
-    },
-  },
-  {
-    name: "Bob",
-    email: "bob@prisma.io",
-    posts: {
-      create: [
-        {
-          title: "Follow Prisma on Twitter",
-          content: "https://www.twitter.com/prisma",
-          published: true,
-        },
-      ],
-    },
-  },
-];
-
-export async function main() {
-  for (const u of userData) {
-    await prisma.user.create({ data: u });
+async function main() {
+  console.log("🌱 Début du processus global de seeding...");
+  try {
+    // On délègue toute la logique métier à l'orchestrateur
+    await runSeeders(prisma);
+    console.log("✅ Processus global terminé avec succès !");
+  } catch (error) {
+    console.error("❌ Échec critique lors du seeding global :", error);
+    process.exit(1);
+  } finally {
+    await prisma.$disconnect();
   }
 }
 
