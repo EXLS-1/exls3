@@ -1,7 +1,7 @@
 // prisma/seed/users.seed.ts
 
 import { PrismaClient } from "../../app/generated/prisma/client";
-import { generateId, seedLogger } from "./utils";
+import { generateId, seedLogger } from "./seed-helpers";
 
 export async function seedUsers(prisma: PrismaClient) {
   seedLogger.start("Utilisateurs");

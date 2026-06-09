@@ -1,7 +1,7 @@
 // prisma/seed/modules.seed.ts
 
 import { PrismaClient } from "../../app/generated/prisma/client";
-import { generateId, seedLogger } from "./utils";
+import { generateId, seedLogger } from "./seed-helpers";
 
 export async function seedModules(prisma: PrismaClient) {
   seedLogger.start("Modules ERP");
