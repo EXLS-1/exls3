@@ -2,8 +2,10 @@
 "use client";
 
 import { useActionState, useState, useMemo } from "react";
-import { createMissionWithEmployees, type MissionFormState } from "@/actions/missions";
+import { createMissionWithEmployees, type MissionFormState } from "@/app/actions/missions";
 import Link from "next/link";
+import { Input } from "@/components/ui/input";
+import { Select } from "@/components/ui/select";
 
 interface Site {
   id: string;
@@ -39,10 +41,11 @@ export function MissionForm({ clients, employees }: MissionFormProps) {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Sélection Client */}
         <div>
-          <label className="block text-xs font-bold text-blue-900 uppercase tracking-wider mb-2">
+          <label htmlFor="clientId" className="block text-xs font-bold text-blue-900 uppercase tracking-wider mb-2">
             Client
           </label>
-          <select
+          <Select
+            id="clientId"
             name="clientId"
             required
             value={selectedClientId}
@@ -54,15 +57,16 @@ export function MissionForm({ clients, employees }: MissionFormProps) {
             {clients.map(c => (
               <option key={c.id} value={c.id}>{c.name}</option>
             ))}
-          </select>
+          </Select>
         </div>
 
         {/* Sélection Site (Dynamique) */}
         <div>
-          <label className="block text-xs font-bold text-blue-900 uppercase tracking-wider mb-2">
+          <label htmlFor="siteId" className="block text-xs font-bold text-blue-900 uppercase tracking-wider mb-2">
             Site d'exécution
           </label>
-          <select
+          <Select
+            id="siteId"
             name="siteId"
             required
             disabled={isPending || !selectedClientId}
@@ -74,7 +78,7 @@ export function MissionForm({ clients, employees }: MissionFormProps) {
             {availableSites.map(s => (
               <option key={s.id} value={s.id}>{s.name}</option>
             ))}
-          </select>
+          </Select>
         </div>
       </div>
 
@@ -83,7 +87,7 @@ export function MissionForm({ clients, employees }: MissionFormProps) {
         <label className="block text-xs font-bold text-blue-900 uppercase tracking-wider mb-2">
           Début de service
         </label>
-        <input
+        <Input
           type="datetime-local"
           name="plannedStartAt"
           required
@@ -94,10 +98,11 @@ export function MissionForm({ clients, employees }: MissionFormProps) {
 
       {/* Agents */}
       <div>
-        <label className="block text-xs font-bold text-blue-900 uppercase tracking-wider mb-2">
+        <label htmlFor="employeeIds" className="block text-xs font-bold text-blue-900 uppercase tracking-wider mb-2">
           Assignation des Agents (Multiple)
         </label>
-        <select
+        <Select
+          id="employeeIds"
           name="employeeIds"
           multiple
           required

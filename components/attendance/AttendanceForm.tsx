@@ -1,4 +1,5 @@
 // components/attendance/AttendanceForm.tsx
+
 "use client";
 
 import React, { JSX } from "react";
@@ -26,6 +27,18 @@ export function AttendanceForm({ missionId, employeeId, missionDate }: Attendanc
   return (
     <form action={action} className="flex items-center gap-3">
       <div className="relative">
+        <label htmlFor="Date" className="sr-only">Date de la mission</label>
+        <input
+          id="Date"
+          type="date"
+          name="Date"
+          required
+          disabled={isPending}
+          title="Entrez la date de la mission (JJ-MM-AAAA)"
+          className="block w-full rounded-md border-0 py-1.5 text-blue-950 shadow-sm ring-1 ring-inset ring-blue-200 placeholder:text-blue-400 focus:ring-2 focus:ring-inset focus:ring-blue-700 sm:text-sm sm:leading-6 disabled:bg-slate-50 disabled:text-slate-500"
+        />
+      </div>
+      <div className="relative">
         <label htmlFor="timeArrival" className="sr-only">Heure d'arrivée</label>
         <input
           id="timeArrival"
@@ -37,7 +50,6 @@ export function AttendanceForm({ missionId, employeeId, missionDate }: Attendanc
           className="block w-full rounded-md border-0 py-1.5 text-blue-950 shadow-sm ring-1 ring-inset ring-blue-200 placeholder:text-blue-400 focus:ring-2 focus:ring-inset focus:ring-blue-700 sm:text-sm sm:leading-6 disabled:bg-slate-50 disabled:text-slate-500"
         />
       </div>
-
       <button
         type="submit"
         disabled={isPending}
