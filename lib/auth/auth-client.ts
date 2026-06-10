@@ -2,6 +2,8 @@
 // Ce fichier encapsule la configuration du client d'authentification Better-Auth
 // pour une utilisation facile dans toute l'application.
 
+"use client";
+
 import { createAuthClient } from "better-auth/react";
 
 export const authClient = createAuthClient({

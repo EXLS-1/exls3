@@ -3,11 +3,13 @@
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { prisma } from "@/lib/prisma";
+import { nextCookies } from "better-auth/next-js"
 
 export const auth = betterAuth({
   database: prismaAdapter(prisma, {
     provider: "postgresql",
   }),
+  
   // Configuration avancée pour la production
   advanced: {
     // Force l'utilisation du préfixe __Secure- et l'attribut 'secure' en production
@@ -41,4 +43,7 @@ export const auth = betterAuth({
   },
   // Requis pour la sécurité CSRF en production
   trustedOrigins: [process.env.NEXT_PUBLIC_APP_URL as string],
+  plugins: [
+    nextCookies()
+  ],
 });

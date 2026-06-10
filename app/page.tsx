@@ -37,7 +37,7 @@ export default async function Home() {
           ) : (
             <>
               <Link
-                href="/login"
+                href="/auth/sign-in"
                 className="w-full sm:w-auto px-8 py-4 bg-blue-700 text-white rounded-2xl font-semibold shadow-lg shadow-blue-200 hover:bg-blue-800 hover:-translate-y-0.5 transition-all"
               >
                 Se connecter
