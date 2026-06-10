@@ -14,17 +14,12 @@ export default async function SignInPage() {
   return (
     <Card className="w-full max-w-md shadow-xl border-zinc-200/50">
       <CardHeader className="text-center space-y-2">
-        <CardTitle className="text-2xl font-bold tracking-tight">Connexion à EXLS ERP</CardTitle>
-        <CardDescription>Entrez vos identifiants pour accéder à votre espace</CardDescription>
+        <CardTitle className="text-2xl font-bold tracking-tight">Connexion à votre compte</CardTitle>
+        <CardDescription>Entrez vos identifiants pour accéder à votre espace dans la plateforme EXCELLENT SERVICE.</CardDescription>
       </CardHeader>
       <CardContent>
         <SignInForm />
-        <p className="mt-6 text-center text-sm text-zinc-500">
-          Pas encore de compte ?{" "}
-          <Link href="/auth/sign-up" className="font-semibold text-zinc-900 hover:underline">
-            Créer un compte
-          </Link>
-        </p>
+        
       </CardContent>
     </Card>
   );

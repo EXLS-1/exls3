@@ -72,7 +72,7 @@ export function SignInForm() {
               <div className="flex items-center justify-between">
                 <FormLabel>Mot de passe</FormLabel>
                 <a href="/auth/forgot-password" className="text-xs font-semibold text-zinc-900 hover:underline">
-                  Oublié ?
+                  Mot de passe oublié ?
                 </a>
               </div>
               <FormControl>
