@@ -4,6 +4,7 @@ import { auth } from "@/lib/auth/auth";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
+import type { Employee, Attendance } from "@prisma/client";
 import { AttendanceFilters } from "@/components/attendance/AttendanceFilters";
 import { AttendanceForm } from "@/components/attendance/AttendanceForm";
 
@@ -11,15 +12,17 @@ import { AttendanceForm } from "@/components/attendance/AttendanceForm";
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
 
 export default async function AttendancePage(props: { searchParams: SearchParams }) {
+  
   // 1. Sécurité : Vérification stricte de la session côté serveur
   const session = await auth.api.getSession({
     headers: await headers(),
   });
 
   if (!session) {
-    redirect("/login");
+    redirect("/auth/sign-in");
   }
-
+ 
+  
   // 2. Gestion des filtres via l'URL (URL comme unique source de vérité)
   const searchParams = await props.searchParams;
   
@@ -47,7 +50,7 @@ export default async function AttendancePage(props: { searchParams: SearchParams
   }));
 
   // B. Récupérer les employés assignés SI une mission est sélectionnée
-  let assignedEmployees: any[] = [];
+  let assignedEmployees: (Employee & { attendance: Attendance[] })[] = [];
   
   if (selectedMissionId) {
     // Requête relationnelle optimisée : on charge les employés de la mission ET leur pointage pour cette mission spécifique

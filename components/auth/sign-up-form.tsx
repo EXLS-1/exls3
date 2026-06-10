@@ -12,7 +12,6 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { SignUpButton } from "./sign-up-button";
 import { SignedUpSuccess } from "./signed-up-success";
-import { OAuthButtons } from "./oauth-buttons";
 
 const signUpSchema = z.object({
   name: z.string().min(2, "Le nom doit contenir au moins 2 caractères"),
@@ -88,16 +87,7 @@ export function SignUpForm() {
         )} />
         <SignUpButton isLoading={isLoading} />
         
-        {/* 👇 SÉPARATEUR ET BOUTONS SOCIAUX */}
-        <div className="relative my-6">
-          <div className="absolute inset-0 flex items-center">
-            <span className="w-full border-t border-zinc-200" />
-          </div>
-          <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-white px-2 text-zinc-500">Ou s'inscrire avec</span>
-          </div>
-        </div>
-        <OAuthButtons />
+       
       </form>
     </Form>
   );
