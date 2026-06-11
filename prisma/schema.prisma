@@ -149,6 +149,7 @@ model Mission {
   
   siteId         String
   site           Site     @relation(fields: [siteId], references: [id], onDelete: Restrict)
+  shift          ShiftType
   
   plannedStartAt DateTime 
   status         MissionStatus @default(PLANNED) 
@@ -223,4 +224,30 @@ model Agent {
   carteId       Boolean @default(false)
   photoPp       Boolean @default(false)
   diplome       Boolean @default(false)
+  documents     Document[] // Relation vers les documents de l'agent
+}
+
+model Document {
+  id          String   @id @default(uuid(7))
+  agentId     String
+  type        DocumentType
+  url         String   // URL du document stocké (ex: S3, Cloudinary)
+  uploadedAt   DateTime @default(now())
+
+  agent       Agent    @relation(fields: [agentId], references: [id], onDelete: Cascade)
+
+  @@map("documents")
+}
+
+enum DocumentType {
+  CV
+  CARTE_IDENTITE
+  DIPLOME
+  AUTRE
+}
+
+enum ShiftType {
+  DAY_12H
+  NIGHT_12H
+  FULL_24H
 }
