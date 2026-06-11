@@ -18,6 +18,7 @@ model User {
   role          UserRole  @default(HR)
   sessions      Session[]
   accounts      Account[]
+  auditLogs     AuditLog[]
 
   // Traçabilité ERP
   attendanceLogs AttendanceRecord[]
@@ -187,29 +188,39 @@ model AttendanceRecord {
   @@map("attendance_records")
 }
 
-model Product {
-  id          String         @id @default(uuid())
-  name        String
-  description String?
-  price       Decimal        @db.Decimal(10, 2)
-  slug        String         @unique // Pour des URL SEO-friendly
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt
-  images      ProductImage[] // Relation vers les images du produit
+model AuditLog {
+  id          String   @id @default(uuid(7))
+  userId      String
+  action      String   // ex: "CREATE_MISSION", "UPDATE_ATTENDANCE"
+  details     Json?    // Détails spécifiques à l'action, stockés en JSON
+  createdAt   DateTime @default(now())
 
-  @@map("products")
+  user        User     @relation(fields: [userId], references: [id])
+
+  @@map("audit_logs")
 }
 
-model ProductImage {
-  id        String   @id @default(uuid())
-  productId String
-  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
-  url       String   // L'URL publique de l'image sur Supabase Storage
-  altText   String?  // Texte alternatif pour l'accessibilité
-  isPrimary Boolean  @default(false) // Pour l'image principale/miniature
-  order     Int      @default(0) // Pour l'ordre d'affichage des images
-  createdAt DateTime @default(now())
+model Agent {
+  id            String    @id @default(uuid(7))
+  nom           String
+  postnom       String?
+  prenom        String
+  contact1      String
+  contact2      String?
+  adresseDomicile String
+  dateNaissance DateTime
+  dateDebutService DateTime
+  observation   String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 
-  @@unique([productId, url]) // S'assure qu'une image n'est pas ajoutée deux fois au même produit
-  @@map("product_images")
+  @@map("agents")
+
+  // Documents de l'agent
+  formulaire    Boolean @default(false)
+  photoUrl      String? // URL de la photo de profil de l'agent
+  cv            Boolean @default(false)
+  carteId       Boolean @default(false)
+  photoPp       Boolean @default(false)
+  diplome       Boolean @default(false)
 }
