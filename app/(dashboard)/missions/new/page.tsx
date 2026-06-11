@@ -1,4 +1,7 @@
 // app/(dashboard)/missions/new/page.tsx
+// Page de création d'une nouvelle mission.
+// Récupère la liste des clients avec leurs sites et la liste des employés actifs côté serveur pour alimenter le formulaire de création de mission.
+
 import { prisma } from "@/lib/prisma";
 import { MissionForm } from "@/components/missions/Mission-form";
 

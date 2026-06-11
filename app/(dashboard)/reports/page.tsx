@@ -1,4 +1,9 @@
 // app/(dashboard)/reports/page.tsx
+// Page de rapports d'audit de présences.
+// Récupère les enregistrements de pointage validés côté serveur avec des filtres dynamiques basés sur les paramètres d'URL (date, employé).
+// Affiche un tableau détaillé avec les informations d'identité de l'agent, la mission associée, la date du pointage et le validateur.
+// Intègre également un composant de filtres pour affiner les résultats en temps réel.
+
 import { prisma } from "@/lib/prisma";
 import { ReportFilters } from "@/components/reports/ReportFilters";
 

@@ -1,4 +1,8 @@
 // app/(dashboard)/admin/page.tsx
+// Page d'administration centrale pour la gestion des ressources (employés, clients, etc.)
+// Cette page affiche des statistiques globales et intègre des formulaires pour la création rapide d'employés et de clients.
+// Les données sont récupérées côté serveur pour une performance optimale et une sécurité renforcée.
+
 import { prisma } from "@/lib/prisma";
 import { EmployeeForm } from "@/components/admin/EmployeeForm";
 import { ClientForm } from "@/components/admin/ClientForm";
