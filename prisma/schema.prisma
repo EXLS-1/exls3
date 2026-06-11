@@ -83,36 +83,13 @@ model Verification {
   @@map("verification")
 }
 
-model Employee {
-  id        String   @id @default(uuid(7))
-  firstName String
-  lastName  String
-  phone     String?
-  status    String   @default("ACTIVE") // ACTIVE, INACTIVE
-  createdAt DateTime @default(now())
-
-  missions   MissionEmployee[]
-  attendance AttendanceRecord[]
-
-  @@map("employees")
-}
-
-model MissionEmployee {
-  missionId  String
-  employeeId String
-  mission    Mission  @relation(fields: [missionId], references: [id], onDelete: Cascade)
-  employee   Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
-  assignedAt DateTime @default(now())
-
-  @@id([missionId, employeeId])
-  @@map("mission_employees")
-}
-
 model Client {
   id        String    @id @default(uuid(7))
   name      String
   contact   String?
-  
+
+  metadata  Json? // Stockage de données spécifiques au client, comme les préférences de notification, les configurations d'API, etc.
+
   sites     Site[]    // Un client possède plusieurs sites
   missions  Mission[] 
   
@@ -156,7 +133,6 @@ model Mission {
   plannedStartAt DateTime 
   status         MissionStatus @default(PLANNED) 
   
-  employees      MissionEmployee[]
   attendance     AttendanceRecord[]
   createdAt      DateTime @default(now())
 
@@ -168,7 +144,7 @@ model Mission {
 model AttendanceRecord {
   id          String   @id @default(uuid(7))
   missionId   String
-  employeeId  String
+  agentId   String
   
   siteId      String
   
@@ -176,7 +152,7 @@ model AttendanceRecord {
   departedAt  DateTime? // Ajout anticipé pour la fin de service
   
   mission     Mission  @relation(fields: [missionId], references: [id], onDelete: Restrict)
-  employee    Employee @relation(fields: [employeeId], references: [id], onDelete: Restrict)
+  agent       Agent    @relation(fields: [agentId], references: [id], onDelete: Restrict)
   site        Site     @relation(fields: [siteId], references: [id], onDelete: Restrict)
   
   createdById String
@@ -184,7 +160,7 @@ model AttendanceRecord {
   createdAt   DateTime @default(now())
 
   // Double contrainte d'unicité pour éviter le double pointage d'un agent sur une même mission
-  @@unique([missionId, employeeId]) 
+  @@unique([missionId, agentId]) 
   @@index([arrivedAt(sort: Desc)])
   @@index([siteId, arrivedAt]) // Index géographique hyper-rapide
   
@@ -217,17 +193,17 @@ model Agent {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   missions      MissionAgent[] // Many-to-many relationship with Mission
-
-  @@map("agents")
+  attendance    AttendanceRecord[] // Relation to attendance records for this agent
 
   // Documents de l'agent
   formulaire    Boolean @default(false)
   photoUrl      String? // URL de la photo de profil de l'agent
   cv            Boolean @default(false)
   carteId       Boolean @default(false)
-  photoPp       Boolean @default(false)
   diplome       Boolean @default(false)
   documents     Document[] // Relation vers les documents de l'agent
+  
+  @@map("agents")
 }
 
 model Document {
