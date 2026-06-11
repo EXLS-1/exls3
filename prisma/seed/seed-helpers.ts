@@ -1,4 +1,4 @@
-// prisma/seed/utils.ts
+// prisma/seed/seed-helpers.ts
 
 import { v7 as uuidv7 } from "uuid";
 
