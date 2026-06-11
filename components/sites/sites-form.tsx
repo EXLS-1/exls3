@@ -1,3 +1,11 @@
+// components/sites/sites-form.tsx
+// Ce composant React représente un formulaire pour créer un nouveau site d'exploitation.
+// Il utilise le hook useActionState pour gérer l'état de l'action de création de site, et affiche des notifications en fonction du résultat.
+// Le formulaire inclut des champs pour le nom du site, la date d'ouverture, l'adresse, le client rattaché et le nom du responsable.
+// Les icônes et styles sont utilisés pour améliorer l'expérience utilisateur et rendre le formulaire plus intuitif.
+// Note: Ce composant est conçu pour être utilisé dans une application Next.js avec une architecture de type "app directory", et suppose que l'action createSite est définie dans app/actions/sites.ts pour gérer la logique de création côté serveur.
+// Importations nécessaires pour le composant SiteForm
+
 "use client";
 
 import React, { useActionState, useEffect } from "react";

@@ -1,3 +1,12 @@
+// app/actions/sites.ts
+// Ce fichier contient la logique métier pour la création d'un nouveau site d'exploitation.
+// Il est utilisé par le composant SiteForm pour traiter les données du formulaire côté serveur.
+// Le code utilise Prisma pour interagir avec la base de données, et gère les erreurs de validation et d'authentification.
+// Le résultat de l'action est retourné sous forme d'un objet indiquant le succès ou l'erreur, qui est ensuite utilisé pour afficher des notifications à l'utilisateur.
+// Note: Cette action est conçue pour être utilisée avec le hook useActionState dans les composants React, permettant une gestion fluide des états de chargement et des résultats.
+// Importations nécessaires pour l'action de création de site d'exploitation
+// "use server" indique que ce code doit être exécuté côté serveur dans le contexte de Next.js
+
 "use server";
 
 import { prisma } from "@/lib/prisma";
