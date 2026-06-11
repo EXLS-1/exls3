@@ -1,6 +1,7 @@
 // app/page.tsx
 
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { getServerSession } from "@/lib/auth/session";
 
 export default async function Home() {
@@ -8,6 +9,11 @@ export default async function Home() {
   const session = await getServerSession();
   
   return (
+    // Si l'utilisateur est connecté, le rediriger vers le dashboard
+    // Cela évite d'afficher la page d'accueil à un utilisateur déjà authentifié
+    session ? (
+      redirect("/dashboard")
+    ) : (
     <main className="flex-1 flex flex-col items-center justify-center p-6 text-center">
       {/* Décoration de fond : Teinte subtile bleutée */}
       <div className="absolute inset-0 -z-10 h-full w-full bg-slate-50 bg-[radial-gradient(#bfdbfe_1px,transparent_1px)] bg-size-[16px_16px] mask-[radial-gradient(ellipse_50%_50%_at_50%_50%,#000_70%,transparent_100%)]" />
@@ -27,30 +33,19 @@ export default async function Home() {
         </div>
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-          {session ? (
-            <Link
-              href="/attendance"
-              className="w-full sm:w-auto px-8 py-4 bg-blue-700 text-white rounded-2xl font-semibold shadow-lg shadow-blue-200 hover:bg-blue-800 hover:-translate-y-0.5 transition-all"
-            >
-              Accéder au Dashboard
-            </Link>
-          ) : (
-            <>
-              <Link
-                href="/auth/sign-in"
-                className="w-full sm:w-auto px-8 py-4 bg-blue-700 text-white rounded-2xl font-semibold shadow-lg shadow-blue-200 hover:bg-blue-800 hover:-translate-y-0.5 transition-all"
-              >
-                Se connecter
-              </Link>
-              <Link
-                href="#features"
-                className="w-full sm:w-auto px-8 py-4 bg-white text-blue-900 border border-blue-200 rounded-2xl font-semibold hover:bg-blue-50 transition-all"
-              >
-                En savoir plus
-              </Link>
-            </>
-          )}
-        </div>
+          <Link
+            href="/login"
+            className="w-full sm:w-auto px-8 py-4 bg-blue-700 text-white rounded-2xl font-semibold shadow-lg shadow-blue-200 hover:bg-blue-800 hover:-translate-y-0.5 transition-all"
+          >
+            Se connecter
+          </Link>
+          <Link
+            href="#features"
+            className="w-full sm:w-auto px-8 py-4 bg-white text-blue-900 border border-blue-200 rounded-2xl font-semibold hover:bg-blue-50 transition-all"
+          >
+            En savoir plus
+          </Link>
+          </div>
 
         {/* Quick Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-12 border-t border-blue-100">
@@ -70,9 +65,6 @@ export default async function Home() {
         </div>
       </div>
 
-      <footer className="absolute bottom-8 text-sm text-zinc-400">
-        © {new Date().getFullYear()} EXCELLENT SERVICE (EXLS). Tous droits réservés.
-      </footer>
+      
     </main>
-  );
-}
+  )

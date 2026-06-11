@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
-import { MobileNavContent } from "./MobileNavContent";
+import { MobileNavContent } from "./mobile-nav-content";
 
 type HeaderProps = {
   user: {

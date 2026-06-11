@@ -1,8 +1,8 @@
 // app/(dashboard)/layout.tsx
 import { redirect } from "next/navigation";
 import { getServerSession } from "@/lib/auth/session"; // L'utilitaire créé précédemment
-import { Header } from "@/components/layout/Header";
-import { AppSidebar } from "@/components/layout/AppSidebar";
+import { Header } from "@/components/layout/header";
+import { AppSidebar } from "@/components/layout/sidebar";
 
 export default async function DashboardLayout({
   children,
