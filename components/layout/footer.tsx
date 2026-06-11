@@ -1,4 +1,4 @@
-      
+// components/layout/footer/tsx      
       
 export default function Footer() {
   return (
@@ -8,7 +8,7 @@ export default function Footer() {
       <footer className="absolute bottom-8 text-sm text-zinc-400">
         © {new Date().getFullYear()} EXCELLENT SERVICE (EXLS). Tous droits réservés.
       </footer>
-      
+
     </main>
   )
 }

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getServerSession } from "@/lib/auth/session";
+import  Footer from "@/components/layout/footer";
 
 export default async function Home() {
   // Récupération sécurisée de la session via l'API de Better-Auth
@@ -16,7 +17,7 @@ export default async function Home() {
     ) : (
     <main className="flex-1 flex flex-col items-center justify-center p-6 text-center">
       {/* Décoration de fond : Teinte subtile bleutée */}
-      <div className="absolute inset-0 -z-10 h-full w-full bg-slate-50 bg-[radial-gradient(#bfdbfe_1px,transparent_1px)] bg-size-[16px_16px] mask-[radial-gradient(ellipse_50%_50%_at_50%_50%,#000_70%,transparent_100%)]" />
+      <div className="absolute inset-0 -z-10 h-full w-full bg-slate-50 bg-[radial-gradient(#bfdbfe_1px,transparent_1px)] bg-size-[16px_16px] mask-[radial-gradient(ellipse_50%_50%_at_50%_50%,#000_70%,transparent_100%)]"  ></div>
 
       <div className="max-w-3xl space-y-8">
         <div className="space-y-4">
@@ -65,6 +66,8 @@ export default async function Home() {
         </div>
       </div>
 
+      <Footer />
       
     </main>
   )
+}
