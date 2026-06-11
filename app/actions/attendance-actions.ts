@@ -23,7 +23,7 @@ export type AttendanceState = {
 // Les données sensibles (missionId, etc.) sont passées via le contexte lié (bind), 
 // pas par le formData qui peut être manipulé côté client.
 export async function logEmployeeArrival(
-  context: { missionId: string; employeeId: string; missionDate: string },
+  context: { missionId: string; agentId: string; missionDate: string },
   prevState: AttendanceState,
   formData: FormData
 ): Promise<AttendanceState> {
@@ -44,7 +44,7 @@ export async function logEmployeeArrival(
   }
 
   const { timeArrival } = validatedFields.data;
-  const { missionId, employeeId, missionDate } = context;
+  const { missionId, agentId, missionDate } = context;
   
   const arrivedAt = new Date(`${missionDate}T${timeArrival}:00`);
   if (isNaN(arrivedAt.getTime())) return { error: "Date de mission invalide." };
@@ -53,7 +53,7 @@ export async function logEmployeeArrival(
     await prisma.attendanceRecord.create({
       data: {
         missionId,
-        employeeId,
+        agent: { connect: { id: agentId } },
         arrivedAt,
         createdById: session.user.id,
       },

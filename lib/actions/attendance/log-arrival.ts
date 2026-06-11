@@ -14,14 +14,25 @@ export const logArrival = createSafeAction(AttendanceSchema, async (data, sessio
     return { success: false, error: "DATE_ERROR", message: "Date de mission invalide." };
   }
 
+  if (
+    !session ||
+    typeof session !== "object" ||
+    !("user" in session) ||
+    typeof (session as any).user?.id !== "string"
+  ) {
+    return { success: false, error: "SESSION_ERROR", message: "Session invalide." };
+  }
+
+  const sessionUser = session as { user: { id: string } };
+
   // L'idéal est de vérifier si la mission existe avant d'insérer, ou compter sur les clés étrangères
   await prisma.attendanceRecord.create({
     data: {
       missionId: data.missionId,
-      employeeId: data.agentId,
+      agent: { connect: { id: data.agentId } },
       siteId: "xxx", // À mapper correctement depuis ta mission
       arrivedAt,
-      createdById: session.user.id,
+      createdById: sessionUser.user.id,
     },
   });
 

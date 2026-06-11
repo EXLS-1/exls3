@@ -9,15 +9,23 @@ import { createSafeAction } from "../factory/createAction";
 import { AgentSchema } from "@/lib/validations/agent.schema";
 // import { supabase } from "@/lib/supabase/server";
 
-export const enrolAgent = createSafeAction(AgentSchema, async (data, session) => {
+type EnrolAgentSession = {
+  user: {
+    id: string;
+  };
+};
+
+export const enrolAgent = createSafeAction(AgentSchema, async (data, session: unknown) => {
   // Optionnel : Gestion de l'upload Supabase ici si besoin, 
   // en passant l'URL au lieu du fichier brut.
+
+  const sess = session as EnrolAgentSession;
 
   await prisma.agent.create({
     data: {
       id: uuidv7(),
       ...data,
-      enrollePar: session.user.id,
+      enrollePar: sess.user.id,
     },
   });
 

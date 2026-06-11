@@ -69,7 +69,7 @@ export async function enrolAgent(
       .safeParse(photoFile);
 
     if (!fileValidation.success) {
-      return { error: "VALIDATION_ERROR", message: fileValidation.error.errors[0].message };
+      return { error: "VALIDATION_ERROR", message: fileValidation.error.issues[0].message };
     }
 
     try {
@@ -122,14 +122,21 @@ export async function enrolAgent(
       data: {
         id: uuidv7(), // Utilisation de Uuid v7
         ...validated.data,
-        enrollePar: session.user.id,
+        // Associer l'agent à l'utilisateur en session via l'identifiant
+        enroleParId: session.user.id,
       },
     });
-
-    revalidatePath("/agents");
-    return { success: true, message: "Agent enrôlé avec succès." };
   } catch (err) {
     console.error("[AGENT_ENROL_ERROR]", err);
     return { error: "DB_ERROR", message: "Erreur lors de l'enregistrement en base." };
   }
+
+  // Revalidation de la page si nécessaire
+  try {
+    revalidatePath("/agents");
+  } catch (e) {
+    console.warn("[REVALIDATE_WARN]", e);
+  }
+
+  return { success: true, message: "Agent enrôlé avec succès." };
 }

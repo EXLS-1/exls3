@@ -1,9 +1,10 @@
 // lib/actions/factory/createAction.ts
+
 import { z } from "zod";
 import { auth } from "@/lib/auth/auth";
 import { headers } from "next/headers";
 
-export type ActionResponse<T = any> = {
+export type ActionResponse<T = unknown> = {
   success: boolean;
   data?: T;
   error?: string;
@@ -13,7 +14,7 @@ export type ActionResponse<T = any> = {
 
 type Handler<TInput, TOutput> = (
   validatedData: TInput,
-  session: any // Remplace par ton type Session réel
+  session: unknown // Remplace par ton type Session réel
 ) => Promise<ActionResponse<TOutput>>;
 
 /**
@@ -41,11 +42,16 @@ export function createSafeAction<TInput, TOutput>(
       // 3. Validation Zod (Centralisée)
       const validatedFields = schema.safeParse(inputData);
       if (!validatedFields.success) {
+        const flattenedErrors = validatedFields.error.flatten().fieldErrors;
+        const fieldErrors: Record<string, string[]> = {};
+        for (const [key, value] of Object.entries(flattenedErrors) as [string, string[] | undefined][]) {
+          if (value) fieldErrors[key] = value as string[];
+        }
         return {
           success: false,
           error: "VALIDATION_ERROR",
           message: "Veuillez vérifier les champs du formulaire.",
-          fieldErrors: validatedFields.error.flatten().fieldErrors,
+          fieldErrors,
         };
       }
 
