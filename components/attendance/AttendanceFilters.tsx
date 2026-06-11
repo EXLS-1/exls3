@@ -1,4 +1,11 @@
 // components/attendance/AttendanceFilters.tsx
+// Ce composant gère les filtres de date et de mission pour la page d'assiduité. Il utilise les hooks de navigation de Next.js pour mettre à jour l'URL sans recharger la page, ce qui permet une expérience utilisateur fluide. Le composant affiche également un indicateur de chargement subtil pendant que les données sont mises à jour côté serveur, et un bouton de réinitialisation pour revenir aux filtres par défaut.
+// Utilise "use client" pour activer les fonctionnalités React côté client, notamment les hooks d'état et de transition.
+// Les fonctions handleFilterChange et handleReset utilisent startTransition pour garantir que l'interface reste réactive pendant les mises à jour de l'URL, en évitant les blocages de l'interface utilisateur lors des requêtes serveur.
+// Importations nécessaires pour le composant AttendanceFilters
+// - useRouter, usePathname, useSearchParams : pour gérer la navigation et les paramètres d'URL de manière fluide
+// - useCallback, useTransition : pour optimiser les fonctions de gestion des filtres et maintenir une interface réactive pendant les transitions
+
 "use client";
 
 import { useRouter, usePathname, useSearchParams } from "next/navigation";

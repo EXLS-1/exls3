@@ -1,3 +1,8 @@
+// types/mission-types.ts
+// Ce fichier définit les types et schémas de validation pour les missions, en utilisant Zod pour assurer la cohérence des données.
+// Il inclut également des types pour les relations avec les agents et les sites, optimisés pour l'affichage dans l'UI.
+// Note: Les types et schémas sont conçus pour être utilisés à la fois dans les actions serveur (ex: création de mission) et dans les composants d'affichage (ex: tableau des missions).
+
 import { z } from "zod";
 import { ShiftSchema } from "@/components/shift/shift";
 

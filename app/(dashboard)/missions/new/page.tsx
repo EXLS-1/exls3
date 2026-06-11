@@ -1,6 +1,6 @@
 // app/(dashboard)/missions/new/page.tsx
 import { prisma } from "@/lib/prisma";
-import { MissionForm } from "@/components/missions/MissionForm";
+import { MissionForm } from "@/components/missions/Mission-form";
 
 export default async function NewMissionPage() {
   const [clientsWithSites, employees] = await Promise.all([

@@ -1,4 +1,8 @@
-// actions/admin.ts
+// app/actions/admin-actions.ts
+// Ce fichier contient les actions liées à la gestion administrative, notamment la création d'employés et de clients.
+// "use server" indique que ce code s'exécute côté serveur, permettant l'accès à la base de données et aux sessions.
+// L'utilisation de Zod pour la validation des données garantit que seules les données conformes sont traitées, améliorant la robustesse de l'application.
+// Les actions createEmployee et createClient reçoivent les données du formulaire, valident ces données, et si elles sont valides, créent de nouveaux enregistrements dans la base de données.
 
 "use server";
 

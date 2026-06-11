@@ -5,7 +5,7 @@ import { Geist, Geist_Mono, Inter } from "next/font/google";
 import "./globals.css";
 import { Toast } from "@/components/ui/Toast";
 import { RootProvider } from "@/lib/provider/root-provider";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/utils";
 
 const inter = Inter({subsets:['latin'],variable:'--font-sans'});
 

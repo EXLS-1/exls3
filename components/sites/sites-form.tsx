@@ -9,7 +9,7 @@
 "use client";
 
 import React, { useActionState, useEffect } from "react";
-import { createSite, type SiteFormState } from "@/app/actions/sites";
+import { createSite, type SiteFormState } from "@/app/actions/sites-actions";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";

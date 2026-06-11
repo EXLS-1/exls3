@@ -1,7 +1,17 @@
+// components/missions/mission-table.tsx
+// Ce composant affiche une table des missions avec leurs détails, y compris l'agent assigné, le site, le roulement et la période. Il utilise des composants UI personnalisés pour une meilleure expérience utilisateur et gère les états de chargement avec un squelette de table. Les données des missions sont passées en tant que props, et chaque ligne de la table est cliquable pour afficher plus d'options via un menu déroulant.
+// Importations nécessaires pour le composant MissionTable
+// - MissionWithRelations : type de données pour les missions avec leurs relations (employé, site, etc.)
+// - ShiftDisplay : composant pour afficher le type de roulement de la mission
+// - Composants UI : Card, Button, DropdownMenu, etc. pour structurer et styliser la table
+// - Icônes : MapPin, User, Calendar, MoreHorizontal, Phone pour une meilleure visualisation des informations
+// - cn : fonction utilitaire pour gérer les classes CSS conditionnelles
+// - format : fonction de date pour formater la période de la mission en français
+
 "use client";
 
 import React from "react";
-import { MissionWithRelations } from "@/lib/schemas/mission";
+import { MissionWithRelations } from "@/lib/schemas/mission-schema";
 import { ShiftDisplay } from "@/components/shift/shift";
 import { Card } from "@/components/ui/card";
 import { 
@@ -11,7 +21,7 @@ import {
   MoreHorizontal,
   Phone
 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/utils";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { Button } from "@/components/ui/button";
@@ -49,18 +59,20 @@ export function MissionTable({ missions, isLoading }: MissionTableProps) {
                 <td className="px-6 py-4">
                   <div className="flex items-center gap-3">
                     <div className="size-10 rounded-full bg-zinc-100 border border-zinc-200 overflow-hidden flex items-center justify-center flex-shrink-0">
-                      {mission.agent.photoPp ? (
-                        <img src={mission.agent.photoPp} alt="Agent" className="size-full object-cover" />
+                      {mission.assignedEmployee?.photoPp ? ( // Assuming photoPp might exist on assignedEmployee
+                        <img src={mission.assignedEmployee.photoPp} alt="Agent" className="size-full object-cover" />
                       ) : (
                         <User className="size-5 text-zinc-400" />
                       )}
                     </div>
                     <div className="flex flex-col">
                       <span className="text-sm font-bold text-zinc-900 leading-tight">
-                        {mission.agent.nom} {mission.agent.prenom}
+                        {mission.assignedEmployee
+                          ? `${mission.assignedEmployee.lastName} ${mission.assignedEmployee.firstName}`
+                          : "Agent non assigné"}
                       </span>
                       <span className="text-[11px] text-zinc-500 flex items-center gap-1">
-                        <Phone className="size-3" /> {mission.agent.contact1}
+                        <Phone className="size-3" /> {mission.assignedEmployee?.phone || "N/A"}
                       </span>
                     </div>
                   </div>
@@ -68,7 +80,7 @@ export function MissionTable({ missions, isLoading }: MissionTableProps) {
                 <td className="px-6 py-4">
                   <div className="flex flex-col">
                     <span className="text-sm font-semibold text-zinc-800">{mission.site.nom}</span>
-                    <span className="text-[11px] text-zinc-500 flex items-center gap-1">
+                    <span className="text-[11px] text-zinc-500 flex items-center gap-1 truncate">
                       <MapPin className="size-3" /> {mission.site.adresse}
                     </span>
                   </div>
@@ -79,8 +91,8 @@ export function MissionTable({ missions, isLoading }: MissionTableProps) {
                 <td className="px-6 py-4">
                   <div className="flex items-center gap-2 text-zinc-600">
                     <Calendar className="size-3.5 text-zinc-400" />
-                    <span className="text-[12px] font-medium uppercase tracking-tighter">
-                      {format(new Date(mission.dateDebut), "dd MMM yyyy", { locale: fr })}
+                    <span className="text-[12px] font-medium uppercase tracking-tight">
+                      {format(new Date(mission.plannedStartAt), "dd MMM yyyy", { locale: fr })}
                     </span>
                   </div>
                 </td>

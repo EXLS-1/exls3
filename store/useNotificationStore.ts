@@ -1,3 +1,8 @@
+// store/useNotificationStore.ts
+// This store manages the state of notifications in the application, including the message, type, and visibility.
+// It provides functions to show and hide notifications, allowing for a consistent way to display messages to the user.
+// The store is created using the Zustand library, which allows for easy state management in React applications.
+
 import { create } from "zustand";
 
 export type NotificationType = "success" | "error" | "info";

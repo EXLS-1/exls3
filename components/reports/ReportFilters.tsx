@@ -1,4 +1,9 @@
 // components/reports/ReportFilters.tsx
+// Ce composant gère les filtres pour les rapports, permettant de filtrer par date et par agent.
+// Il utilise les hooks de navigation de Next.js pour mettre à jour l'URL sans recharger la page, et gère une transition pour indiquer le chargement des données filtrées.
+// Les filtres sont affichés dans une interface utilisateur simple et réactive, avec des styles adaptés pour une bonne expérience utilisateur.
+// Les paramètres de filtre sont maintenus dans l'URL, ce qui permet de partager facilement les liens vers des rapports filtrés.
+
 "use client";
 
 import { useRouter, usePathname, useSearchParams } from "next/navigation";

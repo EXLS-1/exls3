@@ -1,4 +1,4 @@
-// app/actions/agents.ts
+// app/actions/agents-actions.ts
 // Ce fichier contient les actions liées à la gestion des agents, notamment l'enrôlement.
 // "use server" indique que ce code s'exécute côté serveur, permettant l'accès à la base de données et aux sessions.
 // L'utilisation de Zod pour la validation des données garantit que seules les données conformes sont traitées, améliorant la robustesse de l'application.

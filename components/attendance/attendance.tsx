@@ -1,4 +1,4 @@
-// component/attendance/attendance.ts
+// component/attendance/attendance.tsx
 // Ce fichier contient la logique métier pour l'enregistrement de l'heure d'arrivée d'un employé à une mission.
 // Il est utilisé par le composant AttendanceForm pour traiter les données du formulaire côté serveur.
 // "use server" indique que cette fonction doit être exécutée côté serveur, ce qui permet d'accéder à la base de données et à la session utilisateur de manière sécurisée.

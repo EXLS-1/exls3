@@ -1,3 +1,9 @@
+// app/actions/clients-actions.ts
+// Ce fichier contient la logique métier pour l'enregistrement d'un nouveau client dans la base de données. Il est utilisé par le composant ClientForm pour traiter les données du formulaire côté serveur. La fonction registerClient valide les données du formulaire, crée un nouvel enregistrement de client dans la base de données à l'aide de Prisma, et gère les états de succès et d'erreur pour informer l'utilisateur du résultat de l'opération.
+// Importations nécessaires pour l'action registerClient
+// - prisma : pour interagir avec la base de données et créer un nouvel enregistrement de client
+// - auth : pour vérifier la session utilisateur et s'assurer que l'utilisateur est autorisé à effectuer cette action
+
 "use server";
 
 import { prisma } from "@/lib/prisma";

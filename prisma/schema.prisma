@@ -15,7 +15,7 @@ model User {
   image         String?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
-  role          UserRole  @default(HR)
+  role          UserRole  @default(MANAGER)
   sessions      Session[]
   accounts      Account[]
   auditLogs     AuditLog[]
@@ -28,7 +28,7 @@ model User {
 
 enum UserRole {
   ADMIN
-  HR
+  MANAGER
   SUPERVISOR
 }
 
@@ -144,6 +144,8 @@ model Site {
 model Mission {
   id             String   @id @default(uuid(7))
   
+  agents         MissionAgent[] // Many-to-many relationship with Agent
+
   clientId       String
   client         Client   @relation(fields: [clientId], references: [id], onDelete: Restrict)
   
@@ -214,6 +216,7 @@ model Agent {
   observation   String?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
+  missions      MissionAgent[] // Many-to-many relationship with Mission
 
   @@map("agents")
 
@@ -250,4 +253,17 @@ enum ShiftType {
   DAY_12H
   NIGHT_12H
   FULL_24H
+}
+
+model MissionAgent {
+  missionId String
+  agentId   String
+  mission   Mission @relation(fields: [missionId], references: [id], onDelete: Cascade)
+  agent     Agent @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  
+  assignedAt DateTime @default(now())
+
+  @@id([missionId, agentId]) // Primary key for the join table
+  @@unique([missionId, agentId]) // Ensures unique combination of mission and agent
+  @@map("mission_agents")
 }

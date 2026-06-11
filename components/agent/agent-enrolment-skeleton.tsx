@@ -1,4 +1,11 @@
 // components/agent/agent-enrolment-skeleton.tsx
+// Ce composant affiche une interface de chargement (squelette) pour l'enrôlement d'un agent, offrant une expérience utilisateur fluide pendant le chargement des données.
+// Utilise "use client" pour activer les fonctionnalités React côté client, notamment les hooks d'état et d'effet.
+// Le squelette est structuré pour imiter la mise en page du formulaire d'enrôlement réel, avec des éléments de chargement pour les sections d'identité, de contacts, de check-list documentaire, et de photo/observations.
+// Chaque section utilise des composants "Skeleton" pour représenter visuellement les éléments en cours de chargement, améliorant ainsi la perception de performance et réduisant l'impact de l'attente pour l'utilisateur.
+
+
+
 import React from "react";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";

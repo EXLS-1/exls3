@@ -1,7 +1,14 @@
+// components/client/client-form.tsx
+// Ce composant gère le formulaire de création d'un nouveau client dans l'interface d'administration. Il utilise "use client" pour activer les fonctionnalités React côté client, notamment les hooks d'état et d'action. La fonction createClient est une action asynchrone qui traite la soumission du formulaire et gère les états de succès et d'erreur. Le formulaire est conçu pour être simple et rapide à remplir, avec des champs pour le nom de l'entreprise et un contact référent, ainsi qu'un bouton de validation qui affiche un indicateur de chargement pendant le traitement de la soumission.
+// Importations nécessaires pour le composant ClientForm
+// - useActionState : pour gérer l'état de l'action asynchrone liée à la soumission du formulaire
+// - createClient : l'action serveur qui traite les données du formulaire et crée un nouveau client dans la base de données
+// - JSX : pour typer le retour du composant en tant que JSX.Element, assurant une meilleure intégration avec TypeScript et les outils de développement React
+
 "use client";
 
 import React, { useActionState, useEffect } from "react";
-import { registerClient, type ClientFormState } from "@/app/actions/clients";
+import { registerClient, type ClientFormState } from "@/app/actions/clients-actions";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";

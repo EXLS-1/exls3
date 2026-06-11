@@ -1,3 +1,9 @@
+// store/useUserStore.ts
+// This store manages the user information and permissions in the application.
+// It includes the user's role, ID, name, and a list of permissions based on their role.
+// The store provides functions to set user information, clear user data, and check for specific permissions.
+// The store is created using the Zustand library, which allows for easy state management in React applications.
+
 import { create } from "zustand";
 
 export type UserRole = "ADMIN" | "MANAGER" | "EMPLOYEE";

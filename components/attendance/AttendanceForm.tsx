@@ -1,10 +1,15 @@
 // components/attendance/AttendanceForm.tsx
+// Ce composant gère le formulaire d'enregistrement de l'arrivée d'un employé à une mission. Il utilise "use client" pour activer les fonctionnalités React côté client, notamment les hooks d'état et d'action. La fonction logEmployeeArrival est une action asynchrone qui traite la soumission du formulaire et gère les états de succès et d'erreur. Le formulaire est conçu pour être simple et rapide à remplir, avec des champs pour la date de la mission et l'heure d'arrivée, ainsi qu'un bouton de validation qui affiche un indicateur de chargement pendant le traitement de la soumission.
+// Importations nécessaires pour le composant AttendanceForm
+// - useActionState : pour gérer l'état de l'action asynchrone liée à la soumission du formulaire
+// - logEmployeeArrival : l'action serveur qui traite les données du formulaire et enregistre l'arrivée de l'employé
+// - JSX : pour typer le retour du composant en tant que JSX.Element, assurant une meilleure intégration avec TypeScript et les outils de développement React
 
 "use client";
 
 import React, { JSX } from "react";
 import { useActionState } from "react";
-import { logEmployeeArrival, type AttendanceState } from "@/app/actions/attendance";
+import { logEmployeeArrival, type AttendanceState } from "@/app/actions/attendance-actions";
 
 interface AttendanceFormProps {
   missionId: string;

@@ -1,83 +1,34 @@
+// components/agent/agent-enrolment-form.tsx
+// Ce composant gère l'enrôlement d'un nouvel agent avec une interface utilisateur riche et une gestion d'état optimisée.
+// Utilise "use client" pour activer les fonctionnalités React côté client, notamment les hooks d'état et d'effet.
+// La fonction "enrolAgent" est une action asynchrone qui traite la soumission du formulaire et gère les états de succès et d'erreur.
+// Le formulaire est divisé en sections claires pour une meilleure expérience utilisateur, avec des champs d'entrée, des cases à cocher pour la check-list documentaire, et une zone de téléchargement de photo.
+
 "use client";
 
-import React, { useActionState, useEffect, useState, useCallback } from "react";
-import { enrolAgent, type AgentFormState } from "@/app/actions/agents";
+import React, { useActionState, useEffect } from "react";
+import { enrolAgent, type AgentFormState } from "@/app/actions/agents-actions";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetFooter } from "@/components/ui/sheet";
 import { toast } from "sonner";
-import { UserPlus, Calendar, Phone, MapPin, ClipboardList, Loader2, Camera, X } from "lucide-react";
-import Cropper from "react-easy-crop";
-import { getCroppedImg } from "@/lib/utils/crop-image";
+import { UserPlus, Calendar, Phone, MapPin, ClipboardList, Loader2, Camera } from "lucide-react";
 
 const initialState: AgentFormState = {};
 
 export function AgentEnrolmentForm() {
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-
-  // États pour le recadrage
-  const [isCropping, setIsCropping] = useState(false);
-  const [imageToCrop, setImageToCrop] = useState<string | null>(null);
-  const [crop, setCrop] = useState({ x: 0, y: 0 });
-  const [zoom, setZoom] = useState(1);
-  const [croppedAreaPixels, setCroppedAreaPixels] = useState<any>(null);
-
   // useActionState est privilégié pour la performance et la gestion native du pending
   const [state, formAction, isPending] = useActionState(enrolAgent, initialState);
 
   useEffect(() => {
     if (state.success) {
       toast.success(state.message);
-      setPreviewUrl(null);
       (document.getElementById("enrol-form") as HTMLFormElement)?.reset();
     } else if (state.error) {
       toast.error(state.message);
     }
   }, [state]);
-
-  const onCropComplete = useCallback((_: any, pixels: any) => {
-    setCroppedAreaPixels(pixels);
-  }, []);
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const url = URL.createObjectURL(file);
-      setImageToCrop(url);
-      setIsCropping(true);
-    }
-  };
-
-  const confirmCrop = async () => {
-    if (!imageToCrop || !croppedAreaPixels) return;
-
-    try {
-      const croppedBlob = await getCroppedImg(imageToCrop, croppedAreaPixels);
-      if (croppedBlob) {
-        const croppedUrl = URL.createObjectURL(croppedBlob);
-        setPreviewUrl(croppedUrl);
-        
-        // Création d'un nouveau fichier pour l'input
-        const croppedFile = new File([croppedBlob], "agent-photo.jpg", { type: "image/jpeg" });
-        
-        // Injection dans l'input pour que l'Action Serveur reçoive l'image recadrée
-        const input = document.getElementById("photoFile") as HTMLInputElement;
-        const dataTransfer = new DataTransfer();
-        dataTransfer.items.add(croppedFile);
-        if (input) {
-          input.files = dataTransfer.files;
-        }
-        
-        setIsCropping(false);
-        setImageToCrop(null);
-        toast.success("Photo ajustée avec succès");
-      }
-    } catch (error) {
-      toast.error("Erreur lors du recadrage de l'image");
-    }
-  };
 
   return (
     <Card className="max-w-4xl mx-auto border-slate-200 shadow-xl overflow-hidden transition-all">
@@ -165,7 +116,6 @@ export function AgentEnrolmentForm() {
                 { id: "formulaire", label: "Formulaire" },
                 { id: "cv", label: "CV" },
                 { id: "carteId", label: "Carte ID" },
-                { id: "photoPp", label: "Photo PP" },
                 { id: "diplome", label: "Diplôme" },
               ].map((doc) => (
                 <div key={doc.id} className="flex items-center space-x-3 bg-white p-3 rounded-lg border border-slate-200 hover:border-blue-300 transition-colors">
@@ -182,64 +132,35 @@ export function AgentEnrolmentForm() {
             </div>
           </div>
 
-          {/* Section 4: Observations */}
-          <div className="space-y-2">
-            <Label htmlFor="observation">Observations Particulières</Label>
-            <textarea
-              id="observation"
-              name="observation"
-              rows={3}
-              disabled={isPending}
-              className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm ring-offset-white placeholder:text-slate-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 transition-all"
-              placeholder="Mentionner toute information pertinente (expériences passées, aptitudes physiques...)"
-            />
+          {/* Section 4: Photo & Observations */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="space-y-2">
+              <Label htmlFor="photoFile" className="flex items-center gap-2">
+                <Camera className="size-4 text-blue-600" /> Photo de Profil (Numérique)
+              </Label>
+              <Input 
+                id="photoFile" 
+                name="photoFile" 
+                type="file" 
+                accept="image/*" 
+                disabled={isPending}
+                className="cursor-pointer file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="observation">Observations Particulières</Label>
+              <textarea
+                id="observation"
+                name="observation"
+                rows={3}
+                disabled={isPending}
+                className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm focus-visible:ring-2 focus-visible:ring-blue-600 outline-none transition-all"
+                placeholder="Mentionner toute information pertinente..."
+              />
+            </div>
           </div>
 
           <div className="flex items-center justify-end pt-6 border-t gap-4">
-            {/* Interface de recadrage (Sheet Shadcn) */}
-            <Sheet open={isCropping} onOpenChange={setIsCropping}>
-              <SheetContent side="right" className="sm:max-w-xl flex flex-col h-full border-l-blue-50">
-                <SheetHeader>
-                  <SheetTitle className="text-blue-950 font-bold">Ajustement de la Photo</SheetTitle>
-                  <CardDescription>Positionnez l'image pour un rendu optimal (Format 1:1 requis).</CardDescription>
-                </SheetHeader>
-                
-                <div className="relative flex-grow mt-6 bg-slate-900 rounded-2xl overflow-hidden">
-                  {imageToCrop && (
-                    <Cropper
-                      image={imageToCrop}
-                      crop={crop}
-                      zoom={zoom}
-                      aspect={1 / 1}
-                      onCropChange={setCrop}
-                      onCropComplete={onCropComplete}
-                      onZoomChange={setZoom}
-                    />
-                  )}
-                </div>
-
-                <div className="py-6 space-y-4">
-                  <div className="space-y-2">
-                    <Label className="text-[10px] font-bold uppercase text-slate-500">Zoom</Label>
-                    <input 
-                      type="range" 
-                      min={1} max={3} step={0.1} 
-                      value={zoom} 
-                      onChange={(e) => setZoom(Number(e.target.value))}
-                      className="w-full h-2 bg-blue-100 rounded-lg appearance-none cursor-pointer accent-blue-600"
-                    />
-                  </div>
-                </div>
-
-                <SheetFooter className="gap-2 sm:gap-0">
-                  <Button variant="ghost" onClick={() => setIsCropping(false)}>Annuler</Button>
-                  <Button onClick={confirmCrop} className="bg-blue-700 hover:bg-blue-800 text-white font-bold px-8">
-                    Valider la découpe
-                  </Button>
-                </SheetFooter>
-              </SheetContent>
-            </Sheet>
-
             <Button
               type="button"
               variant="ghost"

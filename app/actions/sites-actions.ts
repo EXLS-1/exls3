@@ -1,4 +1,4 @@
-// app/actions/sites.ts
+// app/actions/sites-actions.ts
 // Ce fichier contient la logique métier pour la création d'un nouveau site d'exploitation.
 // Il est utilisé par le composant SiteForm pour traiter les données du formulaire côté serveur.
 // Le code utilise Prisma pour interagir avec la base de données, et gère les erreurs de validation et d'authentification.

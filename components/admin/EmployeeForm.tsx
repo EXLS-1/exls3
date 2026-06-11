@@ -1,4 +1,11 @@
 // components/admin/EmployeeForm.tsx
+// Ce composant gère le formulaire de création d'un nouvel employé dans l'interface d'administration.
+// Il utilise "use client" pour activer les fonctionnalités React côté client, notamment les hooks d'état et d'action. La fonction createEmployee est une action asynchrone qui traite la soumission du formulaire et gère les états de succès et d'erreur. Le formulaire est conçu pour être simple et rapide à remplir, avec des champs pour le nom de l'employé, son adresse e-mail et un rôle, ainsi qu'un bouton de validation qui affiche un indicateur de chargement pendant le traitement de la soumission.
+// Importations nécessaires pour le composant EmployeeForm
+// - useActionState : pour gérer l'état de l'action asynchrone liée à la soumission du formulaire
+// - createEmployee : l'action serveur qui traite les données du formulaire et crée un nouvel employé dans la base de données
+// - JSX : pour typer le retour du composant en tant que JSX.Element, assurant une meilleure intégration avec TypeScript et les outils de développement React
+
 "use client";
 
 import { useActionState, useEffect, useRef } from "react";

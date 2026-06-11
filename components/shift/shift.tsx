@@ -29,7 +29,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Sun, Moon, Clock } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/utils";
 import { z } from "zod";
 
 // --- Configuration des Shifts ---
