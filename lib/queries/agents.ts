@@ -4,15 +4,20 @@
 
 import { prisma } from "@/lib/prisma";
 
-export async function getAgentsForFilter() {
+export async function getActiveAgentsForFilter() {
   try {
+    // Utilisation de `select` au lieu de `include` pour la performance
     return await prisma.agent.findMany({
-      select: { id: true, firstName: true, lastName: true },
       where: { status: "ACTIVE" },
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+      },
       orderBy: { lastName: "asc" },
     });
   } catch (error) {
-    console.error("[QUERY_AGENTS_ERROR]", error);
+    console.error("[QUERY_ERROR] getActiveAgentsForFilter:", error);
     return [];
   }
 }
