@@ -11,7 +11,6 @@
 
 import React, { useActionState, useEffect, useState, useCallback } from "react";
 import { enrolAgent } from "@/lib/actions/agents/enrol-agent";
-import { ActionResult } from "@/lib/actions/factory/createAction";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -27,6 +26,13 @@ import {
   Camera,
   AlertCircle,
 } from "lucide-react";
+
+interface ActionResult {
+  success: boolean;
+  error?: string;
+  message?: string;
+  fieldErrors?: Record<string, string[] | undefined>;
+}
 
 const initialState: ActionResult = {
   success: false,
