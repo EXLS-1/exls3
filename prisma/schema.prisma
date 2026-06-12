@@ -93,10 +93,16 @@ model Client {
   sites     Site[]    // Un client possède plusieurs sites
   missions  Mission[] 
   
+  creePar     String 
   createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
   deletedAt DateTime? 
 
   @@map("clients")
+  // schema.prisma
+
+
+
 }
 
 model Site {
@@ -199,7 +205,7 @@ model Agent {
   formulaire    Boolean @default(false)
   photoUrl      String? // URL de la photo de profil de l'agent
   cv            Boolean @default(false)
-  carteId       Boolean @default(false)
+  carte         Boolean @default(false)
   diplome       Boolean @default(false)
   documents     Document[] // Relation vers les documents de l'agent
   

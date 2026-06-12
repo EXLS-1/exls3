@@ -1,4 +1,5 @@
 // lib/validations/client.schema.ts
+
 import { z } from "zod";
 
 export const ResponsableSchema = z.object({
@@ -11,8 +12,9 @@ export const ResponsableSchema = z.object({
   adresseDomicile: z.string().min(5, "Adresse requise"),
 });
 
-export const ClientRegistrationSchema = z.object({
+export const registerClientSchema = z.object({
   companyName: z.string().min(2, "Nom de l'entreprise requis"),
+  contact: z.string().min(10, "Le contact de l'entreprise est requis (min 10 caractères)"),
   resp1_genre: z.enum(["M", "F"]).optional(),
   resp1_nom: z.string().min(2),
   resp1_prenom: z.string().min(2),

@@ -76,7 +76,7 @@ export type MissionWithRelations = Omit<MissionInput, 'clientId' | 'plannedStart
     adresse: string;
     ville?: string;
   };
-  assignedEmployee?: { // Représente l'employé principal assigné à la mission pour l'affichage
+  assignedAgent?: { // Représente l'employé principal assigné à la mission pour l'affichage
     id: string;
     firstName: string;
     lastName: string;
